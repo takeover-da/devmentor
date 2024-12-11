@@ -7,13 +7,13 @@ import { Link } from 'react-router-dom';  // Link 컴포넌트 임포트
 
 const HeaderContainer = styled.div`
   width: 100%;
-  height: 100px;
+  height: 50px;
   background-color: white;
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 20px;
-  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.37);
 `;
 
 const SiteName = styled.h1`
@@ -24,15 +24,16 @@ const SiteName = styled.h1`
 `;
 
 const LoginButton = styled.button`
-  background-color: rgb(1, 192, 17);
-  color: black;
+  background-color: rgb(0, 0, 0);
+  color: #ffffff;
   border: none;
   padding: 10px 15px;
   border-radius: 5px;
   cursor: pointer;
 
   &:hover {
-    background-color: #21a1f1;
+    background-color: #ffffff;
+    color: #000000;
   }
 `;
 
