@@ -13,21 +13,19 @@ const LayoutContainer = styled.div`
 `;
 
 const ContentContainer = styled.div`
-  /* width: 100%; */
   margin: 0 200px 0 200px;
   background-color: white;
   margin-top: 3%;
 `;
 
-
 const Layout = () => {
   return (
     <LayoutContainer>
-      <Header/>
-        <ContentContainer>
-          <Outlet />
-        </ContentContainer>
-      <Footer />
+      <Header /> {/* 헤더 컴포넌트 삽입 */}
+      <ContentContainer>
+        <Outlet /> {/* 라우터가 렌더링할 페이지 */}
+      </ContentContainer>
+      <Footer /> {/* 푸터 컴포넌트 */}
     </LayoutContainer>
   );
 };

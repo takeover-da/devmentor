@@ -86,10 +86,20 @@ const Banner = styled.div`
   align-items: center;
   color: #000000; /* 폰트 컬러 */
   text-align: center;
-  font-size: 36px;
-  font-weight: bold;
   position: relative;
   margin-bottom: 20px;
+`;
+
+const BannerText = styled.p`
+  font-size: 20px;
+  margin: 0;
+  font-weight: normal;
+`;
+
+const BannerHighlight = styled.h1`
+  font-size: 36px;
+  font-weight: bold;
+  color: #000000;
 `;
 
 // 공통 슬라이더 컴포넌트
@@ -186,7 +196,12 @@ const CoursePage = () => {
 
   return (
     <div>
-      <Banner>전문가들이 만든 실전 중심 강의, 지금 바로 시작하세요.</Banner>
+      <Banner>
+        <div>
+          <BannerHighlight>강의</BannerHighlight>
+          <BannerText>전문가들이 만든 실전 중심 강의, 지금 바로 시작하세요.</BannerText>
+        </div>
+      </Banner>
       <ImageSlider title="프로그래밍" images={programmingImages} />
       <ImageSlider title="게임개발" images={gameDevelopmentImages} />
       <ImageSlider title="데이터사이언스" images={dataScienceImages} />

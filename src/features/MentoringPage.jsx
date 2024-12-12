@@ -1,275 +1,145 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// 색상 팔레트 및 반응형 디자인을 위한 미디어 쿼리
-const theme = {
-  colors: {
-    primary: '#21a1f1',
-    background: '#f4f4f4',
-    white: '#ffffff',
-    textLight: '#888',
-    textDark: '#555'
-  },
-  media: {
-    mobile: '@media (max-width: 768px)',
-    tablet: '@media (max-width: 1024px)'
-  }
-};
-
-// 배너 스타일
-const BannerContainer = styled.div`
-  background-image: url('https://picsum.photos/1200/350');
-  background-size: cover;
-  background-position: center;
-  height: 350px;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  text-align: center;
+// 스타일 정의
+const MentoringPageContainer = styled.div`
   padding: 20px;
-
-  ${theme.media.mobile} {
-    height: 250px;
-  }
 `;
 
-const BannerTitle = styled.h1`
-  font-size: 36px;
-  font-weight: bold;
-  margin-bottom: 10px;
-
-  ${theme.media.mobile} {
-    font-size: 24px;
-  }
-`;
-
-const BannerSubtitle = styled.p`
-  font-size: 18px;
-  margin-top: 0;
-
-  ${theme.media.mobile} {
-    font-size: 14px;
-  }
-`;
-
-// 필터와 검색 영역
 const FilterContainer = styled.div`
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 100%;
-  padding: 20px;
-  background-color: ${theme.colors.background};
-
-  ${theme.media.mobile} {
-    flex-direction: column;
-    gap: 10px;
-  }
+  gap: 20px;
+  margin-bottom: 20px;
 `;
 
-const FilterButton = styled.button`
-  padding: 10px 20px;
-  background-color: #ddd;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+const RadioButton = styled.input`
   margin-right: 10px;
-
-  &:hover {
-    background-color: #ccc;
-  }
 `;
 
-const SearchBox = styled.div`
-  display: flex;
-  align-items: center;
-`;
-
-const SearchInput = styled.input`
-  padding: 8px;
-  font-size: 16px;
-  border: 1px solid #ccc;
-  border-radius: 5px 0 0 5px;
-  width: 300px;
-`;
-
-const SearchButton = styled.button`
-  padding: 10px 20px;
-  background-color: ${theme.colors.primary};
-  color: white;
-  border: none;
-  border-radius: 0 5px 5px 0;
-  cursor: pointer;
-  
-  &:hover {
-    background-color: #1a8ec9;
-  }
-`;
-
-// 카드 콘텐츠 영역
 const ContentContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 20px;
-  width: 100%;
-  padding: 20px;
-
-  ${theme.media.tablet} {
-    grid-template-columns: repeat(2, 1fr);
-  }
-
-  ${theme.media.mobile} {
-    grid-template-columns: 1fr;
-  }
+  margin-bottom: 40px;
 `;
 
 const ContentCard = styled.div`
-  background-color: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  transition: transform 0.3s ease;
+  border: 1px solid #ddd;
+  padding: 15px;
+  border-radius: 5px;
+  background-color: #f9f9f9;
+`;
+
+const ContentTitle = styled.h3`
+  font-size: 18px;
+  font-weight: bold;
+`;
+
+const ContentDetail = styled.p`
+  font-size: 14px;
+  color: #555;
+`;
+
+const Pagination = styled.div`
+  text-align: center;
+`;
+
+const PageNumber = styled.span`
+  margin: 0 5px;
+  cursor: pointer;
+  color: #007bff;
 
   &:hover {
-    transform: scale(1.02);
-  }
-`;
-
-const CardTitle = styled.h3`
-  font-size: 18px;
-  margin-bottom: 10px;
-`;
-
-const CardJob = styled.p`
-  font-size: 14px;
-  color: ${theme.colors.textDark};
-`;
-
-const CardExperience = styled.p`
-  font-size: 14px;
-  color: ${theme.colors.textDark};
-`;
-
-const CardAuthor = styled.p`
-  font-size: 14px;
-  color: ${theme.colors.textLight};
-  margin-top: 10px;
-`;
-
-// 페이지네이션 영역
-const PaginationContainer = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 20px;
-`;
-
-const PageButton = styled.button`
-  padding: 10px 15px;
-  border: 1px solid #ccc;
-  margin: 0 5px;
-  background-color: white;
-  cursor: pointer;
-  
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-  }
-
-  &:not(:disabled):hover {
-    background-color: #f4f4f4;
+    text-decoration: underline;
   }
 `;
 
 const MentoringPage = () => {
-  const [searchQuery, setSearchQuery] = useState('');
-  const [currentPage, setCurrentPage] = useState(1);
+  const [selectedField, setSelectedField] = useState('');  // 선택된 분야
+  const [page, setPage] = useState(1);  // 현재 페이지
 
-  // 예시 데이터 (기존 데이터 유지)
   const contentData = [
-    { title: '멘토링 1', job: '프로그래머', experience: '5년', author: '김정환' },
-    { title: '멘토링 2', job: '디자이너', experience: '3년', author: '홍길동' },
-    { title: '멘토링 1', job: '프로그래머', experience: '5년', author: '김정환' },
-    { title: '멘토링 2', job: '디자이너', experience: '3년', author: '홍길동' },
-    { title: '멘토링 1', job: '프로그래머', experience: '5년', author: '김정환' },
-    { title: '멘토링 2', job: '디자이너', experience: '3년', author: '홍길동' },
-    // ... (나머지 기존 데이터)
+    // 예시 데이터 (제목, 직무, 경력, 작성자)
+    { title: "백엔드 취준, 주니어 이력서 + 포트폴리오 첨삭", job: "백엔드/ 서버 개발자", experience: "미들(4~8년)", author: "생각등대" },
+    { title: "프론트엔드 개발자 취업 전략", job: "프론트엔드 개발자", experience: "초급(0~2년)", author: "이해진" },
+    { title: "풀스택 개발자의 경력 쌓기", job: "풀스택 개발자", experience: "상급(8~15년)", author: "김민수" },
+    { title: "DevOps 전문가의 커리어", job: "DevOps 엔지니어", experience: "미들(4~8년)", author: "박지훈" },
+    { title: "데이터 사이언티스트 커리어 로드맵", job: "데이터 사이언티스트", experience: "초급(0~2년)", author: "조은별" },
+    { title: "ML 전문가로 성장하는 법", job: "머신러닝 엔지니어", experience: "상급(8~15년)", author: "강한결" },
+    // 더 많은 데이터를 추가할 수 있습니다
   ];
 
-  // useMemo를 사용해 페이지네이션 최적화
-  const paginatedContent = useMemo(() => {
-    const itemsPerPage = 4;
-    const startIndex = (currentPage - 1) * itemsPerPage;
-    const endIndex = currentPage * itemsPerPage;
-    return contentData.slice(startIndex, endIndex);
-  }, [currentPage]);
+  const filteredData = contentData.filter(item => {
+    if (!selectedField) return true;  // 필터가 없다면 모든 데이터를 표시
+    return item.job.includes(selectedField);
+  });
 
-  const handleSearch = () => {
-    console.log('검색어:', searchQuery);
-    // 실제 검색 로직 구현 예정
+  const itemsPerPage = 24;  // 한 페이지당 보여줄 항목 수 (4개씩 6줄)
+  const totalPages = Math.ceil(filteredData.length / itemsPerPage);
+
+  const handlePageChange = (pageNumber) => {
+    setPage(pageNumber);
   };
 
-  const handlePageChange = (page) => {
-    setCurrentPage(page);
+  const handleFieldChange = (e) => {
+    setSelectedField(e.target.value);
   };
 
-  const totalPages = Math.ceil(contentData.length / 4);
+  const handleResetFilter = () => {
+    setSelectedField('');
+  };
 
   return (
-    <div>
-      <BannerContainer>
-        <BannerTitle>멘토링 플랫폼</BannerTitle>
-        <BannerSubtitle>
-          전문가와 소통하며 실무 인사이트를 얻어보세요
-        </BannerSubtitle>
-      </BannerContainer>
-
+    <MentoringPageContainer>
       <FilterContainer>
         <div>
-          <FilterButton>직군 필터</FilterButton>
-          <FilterButton>경력 필터</FilterButton>
-        </div>
-        <SearchBox>
-          <SearchInput
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="멘토 또는 주제 검색..."
+          <RadioButton
+            type="radio"
+            id="backend"
+            name="field"
+            value="백엔드"
+            checked={selectedField === '백엔드'}
+            onChange={handleFieldChange}
           />
-          <SearchButton onClick={handleSearch}>검색</SearchButton>
-        </SearchBox>
+          <label htmlFor="backend">백엔드</label>
+        </div>
+        <div>
+          <RadioButton
+            type="radio"
+            id="frontend"
+            name="field"
+            value="프론트엔드"
+            checked={selectedField === '프론트엔드'}
+            onChange={handleFieldChange}
+          />
+          <label htmlFor="frontend">프론트엔드</label>
+        </div>
+        <div>
+          <button onClick={handleResetFilter}>필터 초기화</button>
+        </div>
       </FilterContainer>
 
+      {/* 컨텐츠 목록 */}
       <ContentContainer>
-        {paginatedContent.map((item, index) => (
+        {filteredData.slice((page - 1) * itemsPerPage, page * itemsPerPage).map((content, index) => (
           <ContentCard key={index}>
-            <CardTitle>{item.title}</CardTitle>
-            <CardJob>{item.job}</CardJob>
-            <CardExperience>경력 {item.experience}</CardExperience>
-            <CardAuthor>멘토: {item.author}</CardAuthor>
+            <ContentTitle>{content.title}</ContentTitle>
+            <ContentDetail>직무: {content.job}</ContentDetail>
+            <ContentDetail>경력: {content.experience}</ContentDetail>
+            <ContentDetail>작성자: {content.author}</ContentDetail>
           </ContentCard>
         ))}
       </ContentContainer>
 
-      <PaginationContainer>
-        <PageButton 
-          onClick={() => handlePageChange(currentPage - 1)} 
-          disabled={currentPage === 1}
-        >
-          이전
-        </PageButton>
-        <span>{currentPage} / {totalPages}</span>
-        <PageButton 
-          onClick={() => handlePageChange(currentPage + 1)} 
-          disabled={currentPage === totalPages}
-        >
-          다음
-        </PageButton>
-      </PaginationContainer>
-    </div>
+      {/* 페이지 네비게이션 */}
+      <Pagination>
+        {[...Array(totalPages)].map((_, index) => (
+          <PageNumber key={index} onClick={() => handlePageChange(index + 1)}>
+            {index + 1}
+          </PageNumber>
+        ))}
+      </Pagination>
+    </MentoringPageContainer>
   );
 };
 

@@ -1,210 +1,240 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 
-// 스타일 컴포넌트
-const RoadmapContainer = styled.div`
-  display: flex;
-  flex-direction: column; /* 상단-헤더 포함 */
-  align-items: center;
-`;
-
-const ImageHeaderContainer = styled.div`
-  background-image: url('header-image.jpg'); /* 배경 이미지 경로 */
-  height: 300px; /* 배경 이미지 높이 */
+// 배너 스타일 컴포넌트
+const Banner = styled.section`
   width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  color: white;
+  height: 300px;
+  background-color: #ffffff6a;
   background-size: cover;
   background-position: center;
-  margin-top: 80px; /* 고정 헤더 아래로 이동 */
-  position: relative;
-`;
-
-const HeaderTitle = styled.h1`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000000; /* 폰트 컬러 */
+  text-align: center;
   font-size: 36px;
   font-weight: bold;
+  position: relative;
   margin-bottom: 20px;
 `;
 
-const SearchBox = styled.div`
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background-color: rgba(0, 0, 0, 0.6);
-  padding: 15px;
+const BannerTitle = styled.h1`
+  font-size: 36px;
+  margin: 0;
+  font-weight: bold; /* h1 스타일 */
+`;
+
+const BannerDescription = styled.p`
+  font-size: 18px;
+  margin: 10px 0;
+  font-weight: normal; /* p 스타일 */
+`;
+
+// 이미지 및 항목 영역 스타일
+const ContentContainer = styled.div`
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 한 줄에 3개씩 */
+  gap: 20px; /* 항목 간 간격 */
+  padding: 20px;
+  margin-bottom: 40px;
+`;
+
+const Item = styled.div`
+  border: 1px solid #ddd;
+  padding: 20px;
   border-radius: 10px;
+  text-align: center;
+  background-color: #f9f9f9;
+  overflow: hidden; /* 이미지가 아이템 밖으로 나가지 않도록 */
+  position: relative;
 `;
 
-const SearchInput = styled.input`
-  padding: 10px;
-  font-size: 16px;
-  border-radius: 5px;
-  border: none;
-  margin-right: 10px;
-  outline: none;
-  width: 300px;
-`;
-
-const SearchButton = styled.button`
-  padding: 10px 20px;
-  background-color: #21a1f1;
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
+// 이미지 스타일 (호버 시 확대 효과 추가)
+const ItemImage = styled.img`
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  transition: transform 0.3s ease-in-out; /* 확대 효과를 부드럽게 적용 */
   
   &:hover {
-    background-color: #1a8ec9;
+    transform: scale(1.1); /* 마우스 호버 시 이미지를 확대 */
   }
 `;
 
-const ContentSection = styled.div`
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  padding: 20px;
-  margin-top: 20px; /* 헤더와 이미지 영역 아래로 */
-`;
-
-const FilterContainer = styled.div`
-  width: 250px;
-  position: sticky;
-  top: 100px; /* 고정된 위치로 필터 유지 */
-  padding: 20px;
-  background-color: #f4f4f4;
-  box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-  height: calc(100vh - 100px);
-  overflow-y: auto;
-`;
-
-const FilterTitle = styled.h3`
-  font-size: 18px;
-  margin-bottom: 10px;
-`;
-
-const FilterList = styled.ul`
-  list-style-type: none;
-  padding: 0;
-`;
-
-const FilterItem = styled.li`
-  margin-bottom: 8px;
-  cursor: pointer;
-
-  &:hover {
-    color: #21a1f1;
-  }
-`;
-
-const CourseContainer = styled.div`
-  flex-grow: 1;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 20px;
-  justify-content: space-between;
-  margin-left: 20px;
-`;
-
-const CourseCard = styled.div`
-  width: 22%;
-  background-color: #fff;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  padding: 10px;
-`;
-
-const CourseImage = styled.img`
-  width: 100%;
-  height: 150px;
-  object-fit: cover;
-  border-radius: 8px;
-`;
-
-const CourseTitle = styled.h4`
+const ItemTitle = styled.h3`
   font-size: 18px;
   margin-top: 10px;
 `;
 
-const CourseDescription = styled.p`
+const ItemDescription = styled.p`
   font-size: 14px;
   color: #555;
+  margin-top: 5px;
+`;
+
+// 기술명과 난이도 표시 영역 (해시태그 형식)
+const TagContainer = styled.div`
+  margin-top: 10px;
+  font-size: 14px;
+  color: #333;
+`;
+
+const Tag = styled.span`
+  margin-right: 10px;
+  font-weight: bold;
+  color: #007bff; /* 해시태그 색상 */
+`;
+
+// 검색창과 버튼 스타일
+const SearchContainer = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+`;
+
+const SearchInput = styled.input`
+  padding: 10px;
+  width: 300px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+`;
+
+const SearchButton = styled.button`
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #555;
+  }
+`;
+
+// 페이지 네비게이션 버튼
+const PaginationContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 20px;
+`;
+
+const PageButton = styled.button`
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #333;
+  color: #000000;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #555;
+  }
+
+  &.active {
+    background-color: #ffffff;
+  }
 `;
 
 const RoadmapPage = () => {
-  const [selectedCategory, setSelectedCategory] = useState('');
-  const [searchQuery, setSearchQuery] = useState('');
-
-  // 예시 강의 데이터
-  const courses = [
-    { title: '김영한의 실전 자바 -기본편', image: 'https://via.placeholder.com/150?text=Course+1', description: '김영한', category: '개발,프로그래밍' },
-    { title: 'Windows 시스템 프로그래밍 - 기본', image: 'https://via.placeholder.com/150?text=Course+2', description: '널널한 개발자', category: '게임개발' },
-    { title: '파이썬 주식 매매 봇으로 주식시장 자동사냥하기', image: 'https://via.placeholder.com/150?text=Course+3', description: 'MoneyPouch', category: '데이터사이언스' },
-    { title: '김영한의 실전 자바 -중급편', image: 'https://via.placeholder.com/150?text=Course+4', description: '김영한', category: '개발,프로그래밍' },
-    { title: '[백문이불여일타] 데이터 분석을 위한 기초 SQL', image: 'https://via.placeholder.com/150?text=Course+5', description: '데이터리안', category: '데이터사이언스' },
-    { title: '[켠김에 출시까지] UE5 다크앤다커 스타일의 익스트랙션 RPG (D1)', image: 'https://via.placeholder.com/150?text=Course+6', description: 'Rookiss', category: '게임개발' },
-    { title: '웹 개발의 핵심, HTTP 완벽마스터하기!', image: 'https://via.placeholder.com/150?text=Course+1', description: '김정환', category: '개발,프로그래밍' },
-    { title: '[게임 프로그래머 입문 올인원] C++ & 자료구조/알고리즘 & STL & 게임 수학 & Windows API & 게임 서버', image: 'https://via.placeholder.com/150?text=Course+2', description: 'Rookiss', category: '게임개발' },
-    { title: '[2024 리뉴얼] 처음하는 SQL과 데이터베이스(MySQL) 부트캠프 [입문부터 활용까지]', image: 'https://via.placeholder.com/150?text=Course+3', description: '잔재미코딩 DaveLee', category: '데이터사이언스' },
-    { title: '넓고 얕게 외워서 컴공 전공자 되기', image: 'https://via.placeholder.com/150?text=Course+4', description: '널널한 개발자', category: '개발,프로그래밍' },
-    { title: '비전공자를 위한 수학 통계 기초(이론)', image: 'https://via.placeholder.com/150?text=Course+5', description: 'SW School', category: '데이터사이언스' },
-    { title: '[나만의 게임 텍스처 제작] 서브스탠스 디자이너의 모든 것', image: 'https://via.placeholder.com/150?text=Course+6', description: '광명땅콩', category: '게임개발' },
-    // 추가 강의 데이터...
+  const allItems = [
+    { id: 1, image: "/images/dog1.jpg", roadmapTitle: "Java 끝장내기", difficulty: "초급", tech: "Java", description: "기초부터 시작하는 Java 프로그래밍" },
+    { id: 2, image: "/images/dog2.png", roadmapTitle: "React 완전 정복", difficulty: "중급", tech: "React", description: "React를 활용한 프론트엔드 개발" },
+    { id: 3, image: "/images/dog3.png", roadmapTitle: "Spring Boot 심화", difficulty: "고급", tech: "Spring Boot", description: "Spring Boot를 활용한 백엔드 개발" },
+    { id: 4, image: "/images/dog4.jpg", roadmapTitle: "Node.js 기본부터", difficulty: "초급", tech: "Node.js", description: "Node.js를 활용한 서버 사이드 개발" },
+    { id: 5, image: "/images/dog5.jpg", roadmapTitle: "Python 데이터 분석", difficulty: "초급", tech: "Python", description: "Python을 활용한 데이터 분석" },
+    { id: 6, image: "/images/cat1.jpg", roadmapTitle: "Django 웹 개발", difficulty: "중급", tech: "Django", description: "Django를 사용한 웹 개발" },
+    { id: 7, image: "/images/cat2.jpg", roadmapTitle: "C# 게임 개발", difficulty: "고급", tech: "C#", description: "C#을 활용한 게임 개발" },
+    { id: 8, image: "/images/cat3.jpg", roadmapTitle: "Node.js 서버 개발", difficulty: "초급", tech: "Node.js", description: "Node.js를 활용한 서버 사이드 개발" },
+    { id: 9, image: "/images/cat4.jpg", roadmapTitle: "Python 데이터 분석", difficulty: "초급", tech: "Python", description: "Python을 활용한 데이터 분석" },
+    { id: 10, image: "/images/cat5.png", roadmapTitle: "Django 웹 개발", difficulty: "중급", tech: "Django", description: "Django를 사용한 웹 개발" },
+    { id: 11, image: "/images/gui1.jpg", roadmapTitle: "C# 게임 개발", difficulty: "고급", tech: "C#", description: "C#을 활용한 게임 개발" },
+    { id: 12, image: "/images/gui2.png", roadmapTitle: "JavaScript 기초", difficulty: "초급", tech: "JavaScript", description: "JavaScript의 기본과 웹 개발" },
+    { id: 13, image: "/images/gui3.jpg", roadmapTitle: "HTML 마스터하기", difficulty: "초급", tech: "HTML", description: "HTML을 사용한 웹 페이지 작성" },
+    { id: 14, image: "/images/gui4.jpg", roadmapTitle: "CSS 디자인", difficulty: "초급", tech: "CSS", description: "CSS를 사용한 웹 디자인" },
+    { id: 15, image: "/images/gui5.jpg", roadmapTitle: "Angular 완전 정복", difficulty: "중급", tech: "Angular", description: "Angular로 프론트엔드 개발" },
+    { id: 16, image: "/images/gui6.jpg", roadmapTitle: "Vue.js 심화", difficulty: "중급", tech: "Vue.js", description: "Vue.js를 사용한 웹 애플리케이션 개발" },
   ];
 
-  const handleSearch = () => {
-    console.log('Search query:', searchQuery);
-    // 실제 검색 로직 추가
+  const [searchTerm, setSearchTerm] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+
+  // 검색어에 맞는 항목 필터링
+  const filteredItems = allItems.filter(item => 
+    item.roadmapTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.difficulty.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    item.tech.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
+  const itemsPerPage = 18; // 한 페이지에 표시될 항목 개수 (6줄 * 3개 항목)
+  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const indexOfLastItem = currentPage * itemsPerPage;
+  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
+  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+
+  const handlePageClick = (page) => {
+    setCurrentPage(page);
   };
 
   return (
-    <RoadmapContainer>
-      {/* 이미지 헤더 영역 */}
-      <ImageHeaderContainer>
-        <HeaderTitle>당신만의 로드맵을 찾아보세요!</HeaderTitle>
-        <SearchBox>
-          <SearchInput
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="검색..."
-          />
-          <SearchButton onClick={handleSearch}>검색</SearchButton>
-        </SearchBox>
-      </ImageHeaderContainer>
+    <div>
+      {/* 배너 섹션 */}
+      <Banner>
+        <div>
+          <BannerTitle>로드맵</BannerTitle> {/* h1 스타일로 수정 */}
+          <BannerDescription>다양한 개발 분야의 로드맵을 만나보세요.</BannerDescription> {/* p 스타일로 수정 */}
+          
+          {/* 검색 기능 */}
+          <SearchContainer>
+            <SearchInput 
+              type="text" 
+              placeholder="검색..." 
+              value={searchTerm} 
+              onChange={(e) => setSearchTerm(e.target.value)} 
+            />
+            <SearchButton>검색</SearchButton>
+          </SearchContainer>
+        </div>
+      </Banner>
 
-      {/* 필터 및 콘텐츠 영역 */}
-      <ContentSection>
-        <FilterContainer>
-          <FilterTitle>분야별</FilterTitle>
-          <FilterList>
-            <FilterItem onClick={() => setSelectedCategory('개발,프로그래밍')}>개발, 프로그래밍</FilterItem>
-            <FilterItem onClick={() => setSelectedCategory('게임개발')}>게임개발</FilterItem>
-            <FilterItem onClick={() => setSelectedCategory('데이터사이언스')}>데이터사이언스</FilterItem>
-          </FilterList>
+      {/* 이미지, 기술, 설명 영역 */}
+      <ContentContainer>
+        {currentItems.map(item => (
+          <Item key={item.id}>
+            <ItemImage src={item.image} alt={item.tech} />
+            <ItemTitle>{item.roadmapTitle}</ItemTitle> {/* 로드맵 제목으로 변경 */}
+            
+            {/* 기술명과 난이도 표시 (해시태그 형식) */}
+            <TagContainer>
+              <Tag>#{item.difficulty}</Tag>
+              <Tag>#{item.tech}</Tag>
+            </TagContainer>
 
-          <FilterTitle>시작레벨</FilterTitle>
-          <FilterList>
-            <FilterItem>입문</FilterItem>
-            <FilterItem>초급</FilterItem>
-            <FilterItem>중급</FilterItem>
-          </FilterList>
-        </FilterContainer>
+            <ItemDescription>{item.description}</ItemDescription>
+          </Item>
+        ))}
+      </ContentContainer>
 
-        <CourseContainer>
-          {courses.map((course, index) => (
-            <CourseCard key={index}>
-              <CourseImage src={course.image} alt={course.title} />
-              <CourseTitle>{course.title}</CourseTitle>
-              <CourseDescription>{course.description}</CourseDescription>
-            </CourseCard>
-          ))}
-        </CourseContainer>
-      </ContentSection>
-    </RoadmapContainer>
+      {/* 페이지 네비게이션 */}
+      <PaginationContainer>
+        {Array.from({ length: totalPages }, (_, index) => index + 1).map((page) => (
+          <PageButton
+            key={page}
+            onClick={() => handlePageClick(page)}
+            className={currentPage === page ? "active" : ""}
+          >
+            {page}
+          </PageButton>
+        ))}
+      </PaginationContainer>
+    </div>
   );
 };
 
