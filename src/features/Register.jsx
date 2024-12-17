@@ -1,85 +1,111 @@
-// import React, { useContext, useState } from 'react'
-// import { CustomCard, CustomContainer } from '../components/Styles'
-// import Button from 'react-bootstrap/Button';
-// import Form from 'react-bootstrap/Form';
-// import axios from 'axios';
-// import { Context } from '../index';
-// import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import styled from 'styled-components';
+import { Form, Button } from 'react-bootstrap';
 
-// const Register = () => {
-//   // 새로운 회원정보를 저장할 state 선언
-//   const [member, setMember] = useState(null);
+const FormContainer = styled.div`
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+`;
 
-//   // 입력필드의 이벤트 함수
-//   const handleChange = (event) => {
-//     const {name, value} = event.target;
-//     const newMember ={...member};
-//     newMember[name] = value;
-//     setMember(newMember);
-//   }
+const Title = styled.h3`
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+  font-weight: 600;
+`;
 
-//   const navigate = useNavigate();
+const StyledForm = styled(Form)`
+  .form-group {
+    margin-bottom: 20px;
+  }
 
-//   // API 주소 가져오기
-//   const {host} = useContext(Context);
+  .form-control {
+    border-radius: 5px;
+    border: 1px solid #ddd;
+    padding: 10px;
+    transition: border-color 0.3s;
 
-//   // form 이벤트 함수
-//   const handleSubmit = async (event) => {
-//     event.preventDefault();
+    &:focus {
+      border-color: #007bff;
+      box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
+  }
 
-//     // 회원가입 API 호출
-//     // 인자: 주소, 바디데이터
-//     const response = await axios.post(
-//       `${host}/register`, member
-//     );
-//     if(response.status === 201) {
-//       navigate('/login')
-//     }else{
-//       throw new Error(`api error: ${response.status} ${response.statusText}`);
-//     }
-//   }
-//   return (
-//     <CustomCard>
-//       <CustomContainer>
-//       <h3>회원가입</h3>
-//       <Form onSubmit={handleSubmit}>
-//         <Form.Group className="mb-3" controlId="member.id">
-//           <Form.Label>아이디</Form.Label>
-//           <Form.Control type="text" onChange={handleChange} name='id'/>
-//         </Form.Group>
-//         <Form.Group className="mb-3" controlId="member.password">
-//           <Form.Label>비밀번호</Form.Label>
-//           <Form.Control type="password" onChange={handleChange} name='password'/>
-//         </Form.Group>
-//         <Form.Group className="mb-3" controlId="member.name">
-//           <Form.Label>이름</Form.Label>
-//           <Form.Control type="text" onChange={handleChange} name='name'/>
-//         </Form.Group>
-//         <Form.Group className="mb-3" controlId="member.role">
-//           <Form.Check
-//             type="radio"
-//             label="사용자"
-//             id="member.role1"
-//             name="role"
-//             value="ROLE_USER"
-//             onChange={handleChange}
-//           />
-//           <Form.Check
-//             type="radio"
-//             label="관리자"
-//             id="member.role2"
-//             name="role"
-//             value="ROLE_ADMIN"
-//             onChange={handleChange}
-//           />
-//         </Form.Group>
-//         <Button variant="primary" type="submit">Submit</Button>
-//       </Form>
+  .submit-btn {
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    padding: 0.5rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
 
-//       </CustomContainer>
-//     </CustomCard>
-    
-//   )
-// }
+    &:hover {
+      background-color: #555;
+    }
+  }
 
-// export default Register
+  .radio-group {
+    display: flex;
+    justify-content: space-between;  // 라디오 버튼을 한 줄로 배치
+    gap: 10px;  // 라디오 버튼 사이 간격 설정
+  }
+`;
+
+const Register = () => {
+  const handleRegister = (e) => {
+    e.preventDefault();
+    console.log('회원가입');
+  };
+
+  return (
+    <FormContainer>
+      <Title>회원가입</Title>
+      <StyledForm onSubmit={handleRegister}>
+        <Form.Group className="form-group" controlId="formUsername">
+          <Form.Control type="text" placeholder="이름" />
+        </Form.Group>
+        <Form.Group className="form-group" controlId="formId">
+          <Form.Control type="text" placeholder="아이디" />
+        </Form.Group>
+        <Form.Group className="form-group" controlId="formEmail">
+          <Form.Control type="email" placeholder="이메일" />
+        </Form.Group>
+        <Form.Group className="form-group" controlId="formPassword">
+          <Form.Control type="password" placeholder="비밀번호" />
+        </Form.Group>
+        <Form.Group className="form-group" controlId="formRadioGroup">
+          <div className="radio-group">
+            <Form.Check
+              type="radio"
+              label="학습자"
+              name="userType"
+              id="student"
+            />
+            <Form.Check
+              type="radio"
+              label="교육자"
+              name="userType"
+              id="instructor"
+            />
+            <Form.Check
+              type="radio"
+              label="관리자"
+              name="userType"
+              id="admin"
+            />
+          </div>
+        </Form.Group>
+        <Button className="submit-btn" type="submit">회원가입</Button>
+      </StyledForm>
+    </FormContainer>
+  );
+};
+
+export default Register;

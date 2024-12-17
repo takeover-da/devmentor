@@ -1,70 +1,102 @@
-// import React, { useContext, useState } from 'react'
-// import { CustomCard, CustomContainer } from '../components/Styles'
-// import Button from 'react-bootstrap/Button';
-// import Form from 'react-bootstrap/Form';
-// import { Context } from '../index';
-// import { useNavigate } from 'react-router-dom';
-// import axios from 'axios';
-// import {login} from '../store/memberSlice'
-// import { useDispatch } from 'react-redux';
+import React, { useContext, useState } from 'react';
+import styled from 'styled-components';
+import { Context } from '../index';
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { login } from '../store/memberSlice';
+import { useDispatch } from 'react-redux';
 
-// const Login = () => {
+const FormContainer = styled.div`
+  padding: 20px;
+  max-width: 400px;
+  margin: 0 auto;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+`;
 
-//   // dispath: 스토어의 state를 변경하기 위한 도구
-//   const dispath = useDispatch();
+const Title = styled.h3`
+  text-align: center;
+  margin-bottom: 25px;
+  color: #333;
+`;
 
-//   // 서버 API 주소
-//   const {host} = useContext(Context);
+const Input = styled.input`
+  margin-bottom: 1rem;
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+`;
 
-//   const navigate = useNavigate();
+const Button = styled.button`
+  background-color: #333;
+  color: white;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
 
-//   // 사용자가 입력한 로그인 데이터를 저장할 state
-//   const [user, setUser] = useState();
+  &:hover {
+    background-color: #555;
+  }
+`;
 
-//   // 입력필드의 이벤트 함수
-//   const handleChange = (event) => {
-//     const {name, value} = event.target;
-//     const newUser = {...user};
-//     newUser[name] = value;
-//     setUser(newUser);
-//   }
+const Login = ({ closeModal }) => {
+  const dispatch = useDispatch();
+  const { host } = useContext(Context);
+  const navigate = useNavigate();
 
-//   // form 이벤트 함수
-//   const handleSubmit = async (event) => {
-//     event.preventDefault();
+  const [user, setUser] = useState({ id: '', password: '' });
 
-//     const response = await axios.post(
-//       `${host}/login`, user
-//     );
+  const handleChange = (event) => {
+    const { name, value } = event.target;
+    setUser((prev) => ({ ...prev, [name]: value }));
+  };
 
-//     // 로그인 성공시 홈화면으로 이동 및 응답 데이터를 스토어에 저장
-//     if(response.status === 200) {
-//       // 리듀서함수를 사용하여 스토어에 있는 state를 변경
-//       dispath(login(response.data));
-//       navigate('/')
-//     } else {
-//       throw new Error(`api error: ${response.status} ${response.statusText}`);
-//     }
-//   }
+  const handleSubmit = async (event) => {
+    event.preventDefault();
 
-//   return (
-//     <CustomCard>
-//       <CustomContainer>
-//         <h3>로그인</h3>
-//         <Form onSubmit={handleSubmit}>
-//           <Form.Group className="mb-3" controlId="member.id">
-//             <Form.Label>아이디</Form.Label>
-//             <Form.Control type="text" onChange={handleChange} name='id'/>
-//           </Form.Group>
-//           <Form.Group className="mb-3" controlId="member.password">
-//             <Form.Label>패스워드</Form.Label>
-//             <Form.Control type="password" onChange={handleChange} name='password'/>
-//           </Form.Group>
-//           <Button variant="primary" type="submit">로그인</Button>
-//         </Form>
-//       </CustomContainer>
-//     </CustomCard>
-//   )
-// }
+    try {
+      const response = await axios.post(`${host}/login`, user);
+      if (response.status === 200) {
+        dispatch(login(response.data));
+        navigate('/'); // 로그인 성공 후 홈 화면으로 이동
+        closeModal();  // 로그인 후 모달 닫기
+      } else {
+        throw new Error(`API error: ${response.status} ${response.statusText}`);
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+    }
+  };
 
-// export default Login
+  return (
+    <FormContainer>
+      <Title>로그인</Title>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <Input 
+            type="text" 
+            name="id" 
+            value={user.id} 
+            onChange={handleChange} 
+            placeholder="아이디" 
+          />
+        </div>
+        <div>
+          <Input 
+            type="password" 
+            name="password" 
+            value={user.password} 
+            onChange={handleChange} 
+            placeholder="비밀번호" 
+          />
+        </div>
+        <Button type="submit">로그인</Button>
+      </form>
+    </FormContainer>
+  );
+};
+
+export default Login;

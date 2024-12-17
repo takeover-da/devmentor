@@ -8,19 +8,20 @@ import store from './store/store';
 import { Provider } from 'react-redux';
 
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-
-// Context: 여러 컴포넌트에서 값을 관리할때 사용
 export const Context = createContext();
-
-// API 기본 주소
 let host = 'http://localhost:8080';
 
-root.render(
+const userStr = localStorage.getItem('user');
+const token = localStorage.getItem('token');
+if (userStr !== null) {
+  const user = JSON.parse(userStr);
+  store.dispatch(login({ user: user, token: token }));
+}
 
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(
   <BrowserRouter>
     <React.StrictMode>
-      {/* 하위 컴포넌트들에게 context 데이터 전달 */}
       <Context.Provider value={{host}}>
         <Provider store={store}>
           <App />

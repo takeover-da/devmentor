@@ -1,7 +1,94 @@
-import React, { useRef } from "react";
-import styled from "styled-components";
+import React, { useState, useRef } from "react";
+import styled, { keyframes } from "styled-components";
+import { Modal } from "react-bootstrap"; // react-bootstrap 모달 사용
+import CourseDetail from './CourseDetail'; // 강의 상세 정보 페이지
+import RoadmapDetail from './RoadmapDetail'; // 로드맵 상세 정보 컴포넌트
 
-// Styled components 정의
+// 한 줄씩 뚝뚝 나오는 애니메이션 정의
+const textAppear = keyframes`
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+`;
+
+const Banner = styled.section`
+  width: 100%;
+  height: 300px;
+  background-color: #ffffff6a;
+  background-size: cover;
+  background-position: center;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000000;
+  text-align: center;
+  font-size: 36px;
+  font-weight: bold;
+  position: relative;
+  margin-bottom: 20px;
+`;
+
+const BannerTitleWrapper = styled.div`
+  display: flex;
+  flex-direction: column; /* 텍스트를 한 줄씩 배치 */
+  align-items: center;
+`;
+
+const BannerTitle = styled.h1`
+  font-size: 36px;
+  margin: 0;
+  font-weight: bold;
+  opacity: 0;
+  animation: ${textAppear} 1s ease forwards;
+  animation-delay: 0.2s; /* 첫 번째 줄은 0.2초 후에 애니메이션 시작 */
+  display: inline-block; /* 각 텍스트를 한 줄씩 표시 */
+`;
+
+const BannerDescription = styled.p`
+  font-size: 18px;
+  margin: 10px 0;
+  font-weight: normal;
+  opacity: 0;
+  animation: ${textAppear} 1s ease forwards;
+  animation-delay: 1s; /* 두 번째 줄은 1초 후에 애니메이션 시작 */
+  display: inline-block; /* 각 텍스트를 한 줄씩 표시 */
+`;
+
+const SearchContainer = styled.div`
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+`;
+
+const SearchInput = styled.input`
+  padding: 10px;
+  width: 300px;
+  font-size: 16px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+`;
+
+const SearchButton = styled.button`
+  padding: 10px 20px;
+  font-size: 16px;
+  color: white;
+  background-color: #333;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #555;
+  }
+`;
+
+// 슬라이더 및 강의 상세
 const SliderContainer = styled.div`
   position: relative;
   width: 100%;
@@ -74,36 +161,8 @@ const ArrowButton = styled.button`
   }
 `;
 
-// 배너 추가
-const Banner = styled.div`
-  width: 100%;
-  height: 300px;
-  background-color: #ffffff6a;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #000000; /* 폰트 컬러 */
-  text-align: center;
-  position: relative;
-  margin-bottom: 20px;
-`;
-
-const BannerText = styled.p`
-  font-size: 20px;
-  margin: 0;
-  font-weight: normal;
-`;
-
-const BannerHighlight = styled.h1`
-  font-size: 36px;
-  font-weight: bold;
-  color: #000000;
-`;
-
 // 공통 슬라이더 컴포넌트
-const ImageSlider = ({ title, images }) => {
+const ImageSlider = ({ title, images, onClick }) => {
   const sliderRef = useRef(null);
 
   const scrollToSlide = (direction) => {
@@ -124,7 +183,7 @@ const ImageSlider = ({ title, images }) => {
       </ArrowButton>
       <Slider ref={sliderRef}>
         {images.map((image, index) => (
-          <Slide key={index}>
+          <Slide key={index} onClick={() => onClick(index)}> {/* 슬라이드를 클릭했을 때 해당 강의 정보 열기 */}
             <Image src={image} alt={`Slide ${index + 1}`} />
           </Slide>
         ))}
@@ -137,78 +196,95 @@ const ImageSlider = ({ title, images }) => {
 };
 
 const CoursePage = () => {
-  const programmingImages = [
-    "/images/dog1.jpg",
-    "/images/dog2.png",
-    "/images/dog3.png",
-    "/images/dog4.jpg",
-    "/images/dog5.jpg",
+  const [showModal, setShowModal] = useState(false); // 모달 열기/닫기
+  const [selectedCourse, setSelectedCourse] = useState(null); // 선택된 강의 정보
+  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
+
+  const courseData = [
+    {
+      title: "프로그래밍",
+      images: [
+        "/images/dog1.jpg",
+        "/images/dog2.png",
+        "/images/dog3.png",
+        "/images/dog4.jpg",
+        "/images/dog5.jpg",
+      ],
+    },
+    {
+      title: "게임개발",
+      images: [
+        "/images/dog1.jpg",
+        "/images/dog2.png",
+        "/images/dog3.png",
+        "/images/dog4.jpg",
+        "/images/dog5.jpg",
+      ],
+    },
+    // 다른 카테고리들...
   ];
 
-  const gameDevelopmentImages = [
-    "/images/cat1.jpg",
-    "/images/cat2.jpg",
-    "/images/cat3.jpg",
-    "/images/cat4.jpg",
-    "/images/cat5.png",
-  ];
+  const filteredCourseData = courseData.filter(course =>
+    course.title.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-  const dataScienceImages = [
-    "/images/gui1.jpg",
-    "/images/gui2.png",
-    "/images/gui3.jpg",
-    "/images/gui4.jpg",
-    "/images/gui5.jpg",
-    "/images/gui6.jpg",
-  ];
+  // 강의 클릭 시 모달 열기
+  const handleOpenModal = (index) => {
+    const course = filteredCourseData[index];
+    setSelectedCourse(course); // 선택한 강의 정보 저장
+    setShowModal(true); // 모달 열기
+  };
 
-  const artificialIntelligenceImages = [
-    "/images/tig1.jpg",
-    "/images/tig2.webp",
-    "/images/tig3.webp",
-    "/images/tig4.jpg",
-    "/images/tig5.jpg",
-  ];
-
-  const securityNetworkImages = [
-    "/images/mar1.webp",
-    "/images/mar2.png",
-    "/images/mar3.jpg",
-    "/images/mar4.jpg",
-    "/images/mar5.jpg",
-  ];
-
-  const hardwareImages = [
-    "/images/pig1.jpg",
-    "/images/pig2.jpg",
-    "/images/pig3.jpg",
-    "/images/pig4.jpg",
-    "/images/pig5.jpg",
-  ];
-
-  const designImages = [
-    "/images/ran1.jpg",
-    "/images/ran2.jpg",
-    "/images/ran3.webp",
-    "/images/ran4.jpg",
-    "/images/ran5.jpg",
-  ];
+  // 모달 닫기
+  const handleCloseModal = () => {
+    setShowModal(false); // 모달 닫기
+    setSelectedCourse(null); // 선택된 강의 초기화
+  };
 
   return (
     <div>
+      {/* 배너 영역 */}
       <Banner>
         <div>
-          <BannerHighlight>강의</BannerHighlight>
-          <BannerText>전문가들이 만든 실전 중심 강의, 지금 바로 시작하세요.</BannerText>
+          <BannerTitleWrapper>
+            <BannerTitle>강의</BannerTitle>
+            <BannerDescription>시작부터 실전까지...!</BannerDescription>
+          </BannerTitleWrapper>
+          <SearchContainer>
+            <SearchInput
+              type="text"
+              placeholder="검색..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+            <SearchButton>검색</SearchButton>
+          </SearchContainer>
         </div>
       </Banner>
-      <ImageSlider title="프로그래밍" images={programmingImages} />
-      <ImageSlider title="게임개발" images={gameDevelopmentImages} />
-      <ImageSlider title="데이터사이언스" images={dataScienceImages} />
-      <ImageSlider title="인공지능" images={artificialIntelligenceImages} />
-      <ImageSlider title="보안/네트워크" images={securityNetworkImages} />
-      <ImageSlider title="하드웨어" images={hardwareImages} />
-      <ImageSlider title="디자인" images={designImages} />
+
+      {/* 슬라이더 및 강의 리스트 */}
+      {filteredCourseData.map((course, index) => (
+        <ImageSlider
+          key={index}
+          title={course.title}
+          images={course.images}
+          onClick={() => handleOpenModal(index)} // 슬라이드를 클릭하면 모달 열리기
+        />
+      ))}
+
+      {/* 강의 상세 정보를 모달로 표시 */}
+      <Modal show={showModal} onHide={handleCloseModal} centered size='xl'>
+        <Modal.Header closeButton>
+          <Modal.Title>{selectedCourse?.title}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedCourse ? (
+            <CourseDetail course={selectedCourse} /> // CourseDetail 컴포넌트에 선택된 강의 정보 전달
+          ) : (
+            <p>강의 정보를 불러오는 중...</p>
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

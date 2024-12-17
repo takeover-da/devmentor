@@ -1,19 +1,7 @@
 import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';  // keyframes 추가
+import styled from 'styled-components';
 import { Modal, Button } from 'react-bootstrap';  // react-bootstrap 모달 사용
 import RoadmapDetail from './RoadmapDetail';  // 상세 정보 컴포넌트 임포트
-
-// 한 줄씩 나타나는 애니메이션 정의
-const textAppear = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-`;
 
 // 배너 스타일 컴포넌트
 const Banner = styled.section`
@@ -33,30 +21,16 @@ const Banner = styled.section`
   margin-bottom: 20px;
 `;
 
-const BannerTitleWrapper = styled.div`
-  display: flex;
-  flex-direction: column; /* 텍스트를 한 줄씩 배치 */
-  align-items: center;
-`;
-
 const BannerTitle = styled.h1`
   font-size: 36px;
   margin: 0;
   font-weight: bold;
-  opacity: 0;
-  animation: ${textAppear} 1s ease forwards;
-  animation-delay: 0.2s; /* 첫 번째 줄은 0.2초 후에 애니메이션 시작 */
-  display: block; /* 각 텍스트를 한 줄씩 표시 */
 `;
 
 const BannerDescription = styled.p`
   font-size: 18px;
   margin: 10px 0;
   font-weight: normal;
-  opacity: 0;
-  animation: ${textAppear} 1s ease forwards;
-  animation-delay: 1s; /* 두 번째 줄은 1초 후에 애니메이션 시작 */
-  display: block; /* 각 텍스트를 한 줄씩 표시 */
 `;
 
 // 이미지 및 항목 영역 스타일
