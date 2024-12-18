@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
 
@@ -54,22 +55,26 @@ const EnrollButton = styled.button`
   }
 `;
 
-const CourseDetail = ({ lectureNo }) => {
+const CourseDetail = () => {
+  const { lectureNo } = useParams();
   const [course, setCourse] = useState(null); // 강의 세부 정보
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
 
   const token = localStorage.getItem("token");
-  
+
   // 강의 정보를 API에서 가져오기
   
   useEffect(() => {
     console.log("Received lectureNo:", lectureNo); // lectureNo 값 확인용
     const fetchCourseDetail = async () => {
       try {
-        const response = await axios.get(`/lecture/read?lectureNo=${lectureNo}`);
+        const response = await axios.get(`http://localhost:8080/lecture/read?lectureNo=${lectureNo}`, {
+          headers: { Authorization: token },
+        });
         setCourse(response.data); // 강의 세부 정보 업데이트
         setLoading(false); // 로딩 상태 false로 변경
+
       } catch (err) {
         setError("강의 정보를 불러오는 데 실패했습니다.");
         setLoading(false);

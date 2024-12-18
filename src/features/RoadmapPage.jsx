@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
-import styled, { keyframes } from 'styled-components';  // keyframes 추가
-import { Modal, Button } from 'react-bootstrap';  // react-bootstrap 모달 사용
-import RoadmapDetail from './RoadmapDetail';  // 상세 정보 컴포넌트 임포트
+import React, { useState, useEffect, useContext } from 'react';
+import styled, { keyframes } from 'styled-components';
+import { Modal } from 'react-bootstrap';
+import RoadmapDetail from './RoadmapDetail';
+import axios from 'axios';
+import { Context } from "../index";
+import { Link } from "react-router-dom";
 
-// 한 줄씩 나타나는 애니메이션 정의
 const textAppear = keyframes`
   0% {
     opacity: 0;
@@ -15,7 +17,6 @@ const textAppear = keyframes`
   }
 `;
 
-// 배너 스타일 컴포넌트
 const Banner = styled.section`
   width: 100%;
   height: 300px;
@@ -35,7 +36,7 @@ const Banner = styled.section`
 
 const BannerTitleWrapper = styled.div`
   display: flex;
-  flex-direction: column; /* 텍스트를 한 줄씩 배치 */
+  flex-direction: column;
   align-items: center;
 `;
 
@@ -45,8 +46,8 @@ const BannerTitle = styled.h1`
   font-weight: bold;
   opacity: 0;
   animation: ${textAppear} 1s ease forwards;
-  animation-delay: 0.2s; /* 첫 번째 줄은 0.2초 후에 애니메이션 시작 */
-  display: block; /* 각 텍스트를 한 줄씩 표시 */
+  animation-delay: 0.2s;
+  display: block;
 `;
 
 const BannerDescription = styled.p`
@@ -55,11 +56,10 @@ const BannerDescription = styled.p`
   font-weight: normal;
   opacity: 0;
   animation: ${textAppear} 1s ease forwards;
-  animation-delay: 1s; /* 두 번째 줄은 1초 후에 애니메이션 시작 */
-  display: block; /* 각 텍스트를 한 줄씩 표시 */
+  animation-delay: 1s;
+  display: block;
 `;
 
-// 이미지 및 항목 영역 스타일
 const ContentContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -168,41 +168,44 @@ const PageButton = styled.button`
 `;
 
 const RoadmapPage = () => {
-  const allItems = [
-    { id: 1, image: "/images/dog1.jpg", roadmapTitle: "Java 끝장내기", difficulty: "초급", tech: "Java", description: "기초부터 시작하는 Java 프로그래밍" },
-    { id: 2, image: "/images/dog2.png", roadmapTitle: "React 완전 정복", difficulty: "중급", tech: "React", description: "React를 활용한 프론트엔드 개발" },
-    { id: 3, image: "/images/dog3.png", roadmapTitle: "Spring Boot 심화", difficulty: "고급", tech: "Spring Boot", description: "Spring Boot를 활용한 백엔드 개발" },
-    { id: 4, image: "/images/dog4.jpg", roadmapTitle: "Node.js 기본부터", difficulty: "초급", tech: "Node.js", description: "Node.js를 활용한 서버 사이드 개발" },
-    { id: 5, image: "/images/dog5.jpg", roadmapTitle: "Python 데이터 분석", difficulty: "초급", tech: "Python", description: "Python을 활용한 데이터 분석" },
-    { id: 6, image: "/images/cat1.jpg", roadmapTitle: "Django 웹 개발", difficulty: "중급", tech: "Django", description: "Django를 사용한 웹 개발" },
-    { id: 7, image: "/images/cat2.jpg", roadmapTitle: "C# 게임 개발", difficulty: "고급", tech: "C#", description: "C#을 활용한 게임 개발" },
-    { id: 8, image: "/images/cat3.jpg", roadmapTitle: "Node.js 서버 개발", difficulty: "초급", tech: "Node.js", description: "Node.js를 활용한 서버 사이드 개발" },
-    { id: 9, image: "/images/cat4.jpg", roadmapTitle: "Python 데이터 분석", difficulty: "초급", tech: "Python", description: "Python을 활용한 데이터 분석" },
-    { id: 10, image: "/images/cat5.png", roadmapTitle: "Django 웹 개발", difficulty: "중급", tech: "Django", description: "Django를 사용한 웹 개발" },
-    { id: 11, image: "/images/gui1.jpg", roadmapTitle: "C# 게임 개발", difficulty: "고급", tech: "C#", description: "C#을 활용한 게임 개발" },
-    { id: 12, image: "/images/gui2.png", roadmapTitle: "JavaScript 기초", difficulty: "초급", tech: "JavaScript", description: "JavaScript의 기본과 웹 개발" },
-    { id: 13, image: "/images/gui3.jpg", roadmapTitle: "HTML 마스터하기", difficulty: "초급", tech: "HTML", description: "HTML을 사용한 웹 페이지 작성" },
-    { id: 14, image: "/images/gui4.jpg", roadmapTitle: "CSS 디자인", difficulty: "초급", tech: "CSS", description: "CSS를 사용한 웹 디자인" },
-    { id: 15, image: "/images/gui5.jpg", roadmapTitle: "Angular 완전 정복", difficulty: "중급", tech: "Angular", description: "Angular로 프론트엔드 개발" },
-    { id: 16, image: "/images/gui6.jpg", roadmapTitle: "Vue.js 심화", difficulty: "중급", tech: "Vue.js", description: "Vue.js를 사용한 웹 애플리케이션 개발" },
-  ];
-
-  const [searchTerm, setSearchTerm] = useState("");
+  const [roadmapData, setRoadmapData] = useState([]);
+  const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
-  const [selectedRoadmap, setSelectedRoadmap] = useState(null);  // 선택된 로드맵 상태
-  const [showModal, setShowModal] = useState(false);  // 모달 상태
+  const [selectedRoadmap, setSelectedRoadmap] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
-  const filteredItems = allItems.filter(item =>
-    item.roadmapTitle.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.difficulty.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    item.tech.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const token = localStorage.getItem('token');
+  const { host } = useContext(Context);
+
+  // API 호출하여 로드맵 데이터 가져오기
+  useEffect(() => {
+    const fetchRoadmaps = async () => {
+      try {
+        const response = await axios.get(`${host}/roadmap/list`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (response.status === 200) {
+          setRoadmapData(response.data);
+        }
+      } catch (error) {
+        console.error("로드맵 API 호출 오류:", error);
+      }
+    };
+
+    fetchRoadmaps();
+  }, [host, token]);
+
+  const filteredRoadmaps = roadmapData.filter((roadmap) => {
+    const titleMatch = roadmap.title && roadmap.title.toLowerCase().includes(searchTerm.toLowerCase());
+    const difficultyMatch = roadmap.difficulty && roadmap.difficulty.toString().toLowerCase().includes(searchTerm.toLowerCase());
+    return titleMatch || difficultyMatch;
+  });
 
   const itemsPerPage = 18;
-  const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
+  const totalPages = Math.ceil(filteredRoadmaps.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
+  const currentItems = filteredRoadmaps.slice(indexOfFirstItem, indexOfLastItem);
 
   const handlePageClick = (page) => {
     setCurrentPage(page);
@@ -238,12 +241,11 @@ const RoadmapPage = () => {
 
       <ContentContainer>
         {currentItems.map(item => (
-          <Item key={item.id} onClick={() => handleOpenModal(item)}>
-            <ItemImage src={item.image} alt={item.tech} />
-            <ItemTitle>{item.roadmapTitle}</ItemTitle>
+          <Item key={item.roadmapNo} onClick={() => handleOpenModal(item)}>
+            <ItemImage src={item.image} alt={item.title} />
+            <ItemTitle>{item.title}</ItemTitle>
             <TagContainer>
               <Tag>#{item.difficulty}</Tag>
-              <Tag>#{item.tech}</Tag>
             </TagContainer>
             <ItemDescription>{item.description}</ItemDescription>
           </Item>
@@ -265,7 +267,7 @@ const RoadmapPage = () => {
       {/* 모달 */}
       <Modal show={showModal} onHide={handleCloseModal} centered size="lg">
         <Modal.Header closeButton>
-          <Modal.Title>{selectedRoadmap?.roadmapTitle}</Modal.Title>
+          <Modal.Title>{selectedRoadmap?.title}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           {selectedRoadmap && <RoadmapDetail roadmap={selectedRoadmap} />}

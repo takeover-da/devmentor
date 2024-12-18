@@ -38,7 +38,7 @@ function App() {
           <Route path='/CoursePage' element={<CoursePage />} />
 
           {/* 강의 상세페이지 */}
-          <Route path="/CourseDetail" element={<CourseDetail />} />
+          <Route path="/lecture/read/:lectureNo" element={<CourseDetail />} />
 
           {/* 로드맵 */}
           <Route path='/RoadmapPage' element={<RoadmapPage />} />

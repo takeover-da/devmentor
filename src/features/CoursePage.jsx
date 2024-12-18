@@ -3,6 +3,7 @@ import styled, { keyframes, createGlobalStyle } from "styled-components";
 import { Carousel } from "react-responsive-carousel";
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
+import { Link } from "react-router-dom";
 import { Context } from "../index";
 
 const GlobalStyle = createGlobalStyle`
@@ -220,6 +221,7 @@ const CoursePage = () => {
           interval={5000}
         >
           {filteredCourses.map((course) => (
+              <Link to={`/lecture/read/${course.lectureNo}`}>
             <CourseCard key={course.lectureNo}>
               <CourseImage
                 src={course.fileurl || '/placeholder-image.jpg'}
@@ -234,6 +236,7 @@ const CoursePage = () => {
                 </CourseDate>
               </CourseInfo>
             </CourseCard>
+              </Link>
           ))}
         </StyledCarousel>
       </Container>
