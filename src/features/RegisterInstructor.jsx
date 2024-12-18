@@ -2,10 +2,11 @@ import React, { useContext, useState, useEffect } from "react";
 import styled from "styled-components";
 import { Form, Button } from "react-bootstrap";
 import axios from "axios";
+
 import { Context } from "../index";
 import { useNavigate } from "react-router-dom";
-import RegisterInstructor from "./RegisterInstructor";
 import RegisterAdmin from "./RegisterAdmin";
+import Register from "./Register";
 import Login from "./Login";
 
 const FormContainer = styled.div`
@@ -56,27 +57,33 @@ const StyledForm = styled(Form)`
       background-color: #555;
     }
   }
+
+  .radio-group {
+    display: flex;
+    justify-content: space-between; // 라디오 버튼을 한 줄로 배치
+    gap: 10px; // 라디오 버튼 사이 간격 설정
+  }
 `;
 
-const Register = ({ closeModal }) => {
+const RegisterInstructor = ({ closeModal }) => {
+  const [isModalOpen, setIsModalOpen] = useState(true);
+  const [isLogin, setIsLogin] = useState(false);
+  const [activeRegisterForm, setActiveRegisterForm] = useState("INSTRUCTOR");
+  const { host } = useContext(Context);
+
   const [member, setMember] = useState({
     memberId: "",
     name: "",
     password: "",
     email: "",
-    role: "LEARNER",
+    role: "INSTRUCTOR",
   });
-  const [isModalOpen, setIsModalOpen] = useState(true); // 현재 모달 열림 상태
-  const [activeRegisterForm, setActiveRegisterForm] = useState("LEARNER"); // LEARNER, INSTRUCTOR, ADMIN
-  const [isLogin, setIsLogin] = useState(false);
-  const { host } = useContext(Context);
-  const navigate = useNavigate();
 
   useEffect(() => {
-    if (member.name === "교육자") {
+    if (member.name === "학습자") {
       setTimeout(() => {
         setIsModalOpen(false);
-        setTimeout(() => setActiveRegisterForm("INSTRUCTOR"), 300); // 300ms 뒤에 INSTRUCTOR 모달 열기
+        setTimeout(() => setActiveRegisterForm("LEARNER"), 300); // 300ms 뒤에 INSTRUCTOR 모달 열기
       }, 300);
     }
 
@@ -110,18 +117,15 @@ const Register = ({ closeModal }) => {
     }
   };
 
-  if (activeRegisterForm === "INSTRUCTOR") {
-    return (
-      <RegisterInstructor closeModal={() => setActiveRegisterForm("LEARNER")} />
-    );
+  if (activeRegisterForm === "LEARNER") {
+    return <Register closeModal={() => setActiveRegisterForm("INSTRUCTOR")} />;
   }
 
   if (activeRegisterForm === "ADMIN") {
     return (
-      <RegisterAdmin closeModal={() => setActiveRegisterForm("LEARNER")} />
+      <RegisterAdmin closeModal={() => setActiveRegisterForm("INSTRUCTOR")} />
     );
   }
-
   if (isLogin) {
     return <Login />;
   }
@@ -175,4 +179,4 @@ const Register = ({ closeModal }) => {
   );
 };
 
-export default Register;
+export default RegisterInstructor;
