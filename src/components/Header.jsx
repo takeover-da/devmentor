@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Login from '../features/Login';
+import { logout } from '../store/memberSlice';
 import Register from '../features/Register';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -13,6 +14,21 @@ const HeaderContainer = styled.div`
   align-items: center;
   padding: 0 20px;
   box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.37);
+`;
+
+// 마이페이지 버튼을 위한 스타일
+const MyPageButton = styled.button`
+  background-color: #333;
+  color: white;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+
+  &:hover {
+    background-color: #555;
+  }
 `;
 
 const SiteNameContainer = styled.div`
@@ -79,7 +95,11 @@ const DropdownItem = styled.div`
 `;
 
 const LoginButtonContainer = styled.div`
-  flex-shrink: 0;  // 로그인 버튼을 오른쪽에 고정
+  flex-shrink: 0;
+  display: flex;
+  justify-content: flex-end;  // 버튼을 오른쪽 끝으로 정렬
+  position: relative;  // 자식 요소의 절대 위치 지정
+  gap: 10px;
 `;
 
 const LoginButton = styled.button`
@@ -167,8 +187,37 @@ const Header = () => {
     setIsLogin(!isLogin);
   };
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   // state에서 로그인한 사용자의 정보 가져오기
-  const user = useSelector(state=>state.member.info);
+  const user = useSelector(state => state.member.info);
+
+  // 로그아웃 처리 함수
+  const handleLogout = () => {
+    // 사용자 정보 초기화
+    dispatch(logout());
+
+    // 사용자 정보와 토큰 삭제
+    localStorage.removeItem('user');
+    localStorage.removeItem('token');
+
+    // 로그인 폼으로 전환
+    setIsLogin(true);
+  };
+
+  // 마이페이지
+  const handleMyPageRedirect = () => {
+    if (user) {
+      if (user.role === 'ADMIN') {
+        navigate('/AdminMypage');
+      } else if (user.role === 'INSTRUCTOR') {
+        navigate('/InstructorMypage');
+      } else if (user.role === 'LEARNER') {
+        navigate('/LearnerMypage');
+      }
+    }
+  };
 
   return (
     <HeaderContainer>
@@ -208,15 +257,15 @@ const Header = () => {
         </MenuItem>
       </MenuContainerWrapper>
 
-      {/* 로그인을 했으면 user데이터 있고, 아니면 없음 */}
-      {
-        user === null ? 
+      {/* 로그인 / 마이페이지 / 로그아웃 버튼 */}
+      { user === null ? 
         <LoginButtonContainer>
           <LoginButton onClick={openModal}>로그인</LoginButton>
         </LoginButtonContainer> 
         :
         <LoginButtonContainer>
-          <LoginButton onClick={openModal}>로그아웃</LoginButton>
+          <MyPageButton onClick={handleMyPageRedirect}>마이페이지</MyPageButton>
+          <LoginButton onClick={handleLogout}>로그아웃</LoginButton>
         </LoginButtonContainer>
       }
 

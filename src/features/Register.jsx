@@ -1,6 +1,11 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
 import { Form, Button } from 'react-bootstrap';
+import axios from 'axios';
+
+import { Context } from '../index';
+import { useNavigate } from 'react-router-dom';
+
 
 const FormContainer = styled.div`
   max-width: 400px;
@@ -59,47 +64,71 @@ const StyledForm = styled(Form)`
 `;
 
 const Register = () => {
-  const handleRegister = (e) => {
+
+  const navigate = useNavigate();
+  
+  const [member, setMember] = useState({});
+
+  const {host} = useContext(Context);
+
+  function handleChange(e) {
+    const {name, value} = e.target;
+    const newMember = {...member};
+    newMember[name] = value;
+    setMember(newMember);
+  }
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('회원가입');
+
+    const response = await axios.post(`${host}/register`, member);
+
+    if (response.status !== 201) {
+      throw new Error(`api error: ${response.status} ${response.statusText}`);
+    } else {
+      navigate('/login');
+    }
   };
 
   return (
     <FormContainer>
       <Title>회원가입</Title>
-      <StyledForm onSubmit={handleRegister}>
-        <Form.Group className="form-group" controlId="formUsername">
-          <Form.Control type="text" placeholder="이름" />
+      <StyledForm onSubmit={handleSubmit}>
+        <Form.Group className="form-group" controlId="member.name">
+          <Form.Control type="text" placeholder="이름" onChange={handleChange} name="name"/>
         </Form.Group>
-        <Form.Group className="form-group" controlId="formId">
-          <Form.Control type="text" placeholder="아이디" />
+        <Form.Group className="form-group" controlId="member.id">
+          <Form.Control type="text" placeholder="아이디"  onChange={handleChange} name="id"/>
         </Form.Group>
-        <Form.Group className="form-group" controlId="formEmail">
-          <Form.Control type="email" placeholder="이메일" />
+        <Form.Group className="form-group" controlId="member.email">
+          <Form.Control type="email" placeholder="이메일"  onChange={handleChange} name="email"/>
         </Form.Group>
-        <Form.Group className="form-group" controlId="formPassword">
-          <Form.Control type="password" placeholder="비밀번호" />
+        <Form.Group className="form-group" controlId="member.password">
+          <Form.Control type="password" placeholder="비밀번호"  onChange={handleChange} name="password"/>
         </Form.Group>
         <Form.Group className="form-group" controlId="formRadioGroup">
-          <div className="radio-group">
+          <div className="radio-group" controlId='member.role'>
             <Form.Check
               type="radio"
               label="학습자"
-              name="userType"
-              id="student"
-            />
+              name="role"
+              id="LEARNER"
+              onChange={handleChange} />
+
             <Form.Check
               type="radio"
               label="교육자"
-              name="userType"
-              id="instructor"
-            />
+              name="role"
+              id="INSTRUCTOR"
+              onChange={handleChange} />
+
             <Form.Check
               type="radio"
               label="관리자"
-              name="userType"
-              id="admin"
-            />
+              name="role"
+              id="ADMIN"
+              onChange={handleChange} />
+
           </div>
         </Form.Group>
         <Button className="submit-btn" type="submit">회원가입</Button>
