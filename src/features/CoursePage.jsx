@@ -1,8 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import { Modal } from "react-bootstrap"; // react-bootstrap 모달 사용
 import CourseDetail from './CourseDetail'; // 강의 상세 정보 페이지
 import RoadmapDetail from './RoadmapDetail'; // 로드맵 상세 정보 컴포넌트
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { Context } from "../index";
 
 // 한 줄씩 뚝뚝 나오는 애니메이션 정의
 const textAppear = keyframes`
@@ -200,29 +203,66 @@ const CoursePage = () => {
   const [selectedCourse, setSelectedCourse] = useState(null); // 선택된 강의 정보
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
 
-  const courseData = [
-    {
-      title: "프로그래밍",
-      images: [
-        "/images/dog1.jpg",
-        "/images/dog2.png",
-        "/images/dog3.png",
-        "/images/dog4.jpg",
-        "/images/dog5.jpg",
-      ],
-    },
-    {
-      title: "게임개발",
-      images: [
-        "/images/dog1.jpg",
-        "/images/dog2.png",
-        "/images/dog3.png",
-        "/images/dog4.jpg",
-        "/images/dog5.jpg",
-      ],
-    },
-    // 다른 카테고리들...
-  ];
+  const [courseData, setCourseData] = useState([]);
+
+  // 가짜 데이터
+  // const courseData = [
+  //   {
+  //     title: "프로그래밍",
+  //     images: [
+  //       "/images/dog1.jpg",
+  //       "/images/dog2.png",
+  //       "/images/dog3.png",
+  //       "/images/dog4.jpg",
+  //       "/images/dog5.jpg",
+  //     ],
+  //   },
+  //   {
+  //     title: "게임개발",
+  //     images: [
+  //       "/images/dog1.jpg",
+  //       "/images/dog2.png",
+  //       "/images/dog3.png",
+  //       "/images/dog4.jpg",
+  //       "/images/dog5.jpg",
+  //     ],
+  //   },
+  //   // 다른 카테고리들...
+  // ];
+
+  // 로그인한 사용자의 토큰
+  const token = useSelector((state) => state.member.token);
+
+  // API 기본 주소
+  const { host } = useContext(Context);
+
+  // 강의 리스트 조회 API 호출
+  useEffect(()=>{
+
+    const apicall = async () => {
+
+      const response = await axios.get(`${host}/lecture/img`, {
+        headers: {
+          Authorization: token
+        }
+      });
+      if (response.status === 200) {
+        let temp = [{
+          title: "프로그래밍",
+          images: response.data
+        },
+        {
+          title: "게임개발",
+          images: response.data
+        }];
+        setCourseData(temp);
+      } 
+
+    }
+    apicall();
+
+  }, []);
+
 
   const filteredCourseData = courseData.filter(course =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase())

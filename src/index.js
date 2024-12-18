@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import { createContext } from 'react';
 import store from './store/store';
 import { Provider } from 'react-redux';
+import { login } from './store/memberSlice';
 
 
 export const Context = createContext();
