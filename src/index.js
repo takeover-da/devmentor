@@ -12,10 +12,13 @@ import { login } from './store/memberSlice';
 export const Context = createContext();
 let host = 'http://localhost:8080';
 
+// 리액트 앱이 다시 실행이 될때
+// 브라우저에 있는 로그인데이터를 꺼내서 다시 로그인 처리
 const userStr = localStorage.getItem('user');
 const token = localStorage.getItem('token');
 if (userStr !== null) {
   const user = JSON.parse(userStr);
+  // 다시 로그인
   store.dispatch(login({ user: user, token: token }));
 }
 

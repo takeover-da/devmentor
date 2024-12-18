@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import Login from '../features/Login';
 import Register from '../features/Register';
+import { useSelector } from 'react-redux';
 
 const HeaderContainer = styled.div`
   width: 100%;
@@ -166,6 +167,9 @@ const Header = () => {
     setIsLogin(!isLogin);
   };
 
+  // state에서 로그인한 사용자의 정보 가져오기
+  const user = useSelector(state=>state.member.info);
+
   return (
     <HeaderContainer>
       <SiteNameContainer>
@@ -204,9 +208,17 @@ const Header = () => {
         </MenuItem>
       </MenuContainerWrapper>
 
-      <LoginButtonContainer>
-        <LoginButton onClick={openModal}>로그인</LoginButton>
-      </LoginButtonContainer>
+      {/* 로그인을 했으면 user데이터 있고, 아니면 없음 */}
+      {
+        user === null ? 
+        <LoginButtonContainer>
+          <LoginButton onClick={openModal}>로그인</LoginButton>
+        </LoginButtonContainer> 
+        :
+        <LoginButtonContainer>
+          <LoginButton onClick={openModal}>로그아웃</LoginButton>
+        </LoginButtonContainer>
+      }
 
       <ModalOverlay isOpen={isModalOpen} onClick={closeModal}>
         <ModalContent onClick={(e) => e.stopPropagation()}>

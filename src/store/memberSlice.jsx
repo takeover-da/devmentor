@@ -12,8 +12,11 @@ export const memberSlice = createSlice({
   initialState,
   reducers: {
     login: (state, action) => {
+      // 로그인 데이터를 state 상태와 브라우저 스토리지 저장
       state.token = action.payload.token;
       state.info = action.payload.user;
+      // 브라우저 꺼지면 state 상태 초기화
+      // 로그인 상태 유지
       localStorage.setItem('token', action.payload.token);
       localStorage.setItem('user', JSON.stringify(action.payload.user));
     },

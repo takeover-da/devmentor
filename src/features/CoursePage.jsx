@@ -203,6 +203,7 @@ const CoursePage = () => {
   const [selectedCourse, setSelectedCourse] = useState(null); // 선택된 강의 정보
   const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
 
+  // state 저장 => 값이 변경되면 화면을 다시 만들어야됨
   const [courseData, setCourseData] = useState([]);
 
   // 가짜 데이터
@@ -236,16 +237,18 @@ const CoursePage = () => {
   // API 기본 주소
   const { host } = useContext(Context);
 
-  // 강의 리스트 조회 API 호출
+  // 강의 이미지 리스트 조회 API 호출
   useEffect(()=>{
 
     const apicall = async () => {
 
+      // API 주소, 헤더
       const response = await axios.get(`${host}/lecture/img`, {
         headers: {
           Authorization: token
         }
       });
+      
       if (response.status === 200) {
         let temp = [{
           title: "프로그래밍",

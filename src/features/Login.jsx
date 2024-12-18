@@ -57,6 +57,7 @@ const Login = ({ closeModal }) => {
   const handleSubmit = async (event) => {
     event.preventDefault();
 
+    // 로그인 API 호출
     try {
       const response = await axios.post(`${host}/login`, user);
       if (response.status === 200) {
