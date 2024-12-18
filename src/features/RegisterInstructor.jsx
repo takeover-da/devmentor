@@ -132,7 +132,7 @@ const RegisterInstructor = ({ closeModal }) => {
 
   return (
     <FormContainer style={{ display: isModalOpen ? "block" : "none" }}>
-      <Title>회원가입</Title>
+      <Title>교육자 회원가입</Title>
       <StyledForm onSubmit={handleSubmit}>
         <Form.Group className="form-group" controlId="member.name">
           <Form.Control

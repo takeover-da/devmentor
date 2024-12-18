@@ -1,80 +1,69 @@
-import React, { useState, useRef, useContext, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
-import { Modal } from "react-bootstrap"; // react-bootstrap 모달 사용
-import CourseDetail from './CourseDetail'; // 강의 상세 정보 페이지
-import RoadmapDetail from './RoadmapDetail'; // 로드맵 상세 정보 컴포넌트
-import { useSelector } from "react-redux";
+import React, { useState, useEffect, useContext } from "react";
+import styled, { keyframes, createGlobalStyle } from "styled-components";
+import { Carousel } from "react-responsive-carousel";
+import "react-responsive-carousel/lib/styles/carousel.min.css";
 import axios from "axios";
 import { Context } from "../index";
 
-// 한 줄씩 뚝뚝 나오는 애니메이션 정의
-const textAppear = keyframes`
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
+const GlobalStyle = createGlobalStyle`
+  body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f0f2f5;
+    margin: 0;
+    padding: 0;
   }
 `;
 
-const Banner = styled.section`
-  width: 100%;
-  height: 300px;
-  background-color: #ffffff6a;
-  background-size: cover;
-  background-position: center;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: #000000;
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const Container = styled.div`
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+`;
+
+const Header = styled.header`
+  background-color: #ffffff;
+  padding: 20px 0;
+  /* box-shadow: 0 2px 4px rgba(0,0,0,0.1); */
+`;
+
+const Title = styled.h1`
+  color: #333;
   text-align: center;
-  font-size: 36px;
-  font-weight: bold;
-  position: relative;
+  font-size: 2.5em;
+  margin-bottom: 10px;
+  animation: ${fadeIn} 1s ease-out;
+`;
+
+const Subtitle = styled.p`
+  color: #666;
+  text-align: center;
+  font-size: 1.2em;
   margin-bottom: 20px;
-`;
-
-const BannerTitleWrapper = styled.div`
-  display: flex;
-  flex-direction: column; /* 텍스트를 한 줄씩 배치 */
-  align-items: center;
-`;
-
-const BannerTitle = styled.h1`
-  font-size: 36px;
-  margin: 0;
-  font-weight: bold;
-  opacity: 0;
-  animation: ${textAppear} 1s ease forwards;
-  animation-delay: 0.2s; /* 첫 번째 줄은 0.2초 후에 애니메이션 시작 */
-  display: inline-block; /* 각 텍스트를 한 줄씩 표시 */
-`;
-
-const BannerDescription = styled.p`
-  font-size: 18px;
-  margin: 10px 0;
-  font-weight: normal;
-  opacity: 0;
-  animation: ${textAppear} 1s ease forwards;
-  animation-delay: 1s; /* 두 번째 줄은 1초 후에 애니메이션 시작 */
-  display: inline-block; /* 각 텍스트를 한 줄씩 표시 */
+  animation: ${fadeIn} 1s ease-out 0.5s both;
 `;
 
 const SearchContainer = styled.div`
-  margin-top: 20px;
   display: flex;
   justify-content: center;
-  gap: 10px;
+  margin-bottom: 30px;
 `;
 
 const SearchInput = styled.input`
-  padding: 10px;
   width: 300px;
+  padding: 10px 15px;
   font-size: 16px;
   border: 1px solid #ddd;
-  border-radius: 5px;
+  border-radius: 25px 0 0 25px;
+  outline: none;
+
+  &:focus {
+    border-color: #555;
+  }
 `;
 
 const SearchButton = styled.button`
@@ -83,253 +72,174 @@ const SearchButton = styled.button`
   color: white;
   background-color: #333;
   border: none;
-  border-radius: 5px;
+  border-radius: 0 25px 25px 0;
   cursor: pointer;
+  transition: background-color 0.3s;
 
   &:hover {
     background-color: #555;
   }
 `;
 
-// 슬라이더 및 강의 상세
-const SliderContainer = styled.div`
-  position: relative;
-  width: 100%;
-  overflow: hidden;
-  margin-bottom: 30px; /* 카테고리 간 간격 */
-  padding: 0 20px; /* 좌우 여백 추가 */
+const StyledCarousel = styled(Carousel)`
+  .carousel .slide {
+    background: #fff;
+    border-radius: 8px;
+    overflow: hidden;
+    /* box-shadow: 0 4px 6px rgba(0,0,0,0.1); */
+  }
+
+  .carousel .slide img {
+    max-height: 400px;
+    object-fit: cover;
+  }
+
+  .carousel .legend {
+    background: rgba(0,0,0,0.7);
+    border-radius: 10px;
+    bottom: 40px;
+    color: #fff;
+    font-size: 14px;
+    max-width: 80%;
+    padding: 15px;
+    opacity: 1;
+  }
+
+  .carousel .control-dots {
+    bottom: 0;
+  }
+
+  .carousel .control-dots .dot {
+    box-shadow: none;
+    background: #4a90e2;
+    outline: 0;
+  }
+
+  .carousel .control-arrow {
+    background: rgba(0,0,0,0.3);
+    border-radius: 50%;
+    height: 50px;
+    width: 50px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
 `;
 
-const Title = styled.h2`
-  margin-top: 20px; /* 헤더와 슬라이더 사이에 여백 추가 */
-  margin-bottom: 10px; /* 헤더 하단 여백 */
-  font-size: 24px;
+const CourseCard = styled.div`
+  background: white;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  margin-bottom: 20px;
+`;
+
+const CourseImage = styled.img`
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+`;
+
+const CourseInfo = styled.div`
+  padding: 20px;
+`;
+
+const CourseTitle = styled.h2`
+  color: #333;
+  font-size: 1.5em;
+  margin-bottom: 10px;
+`;
+
+const CourseDescription = styled.p`
+  color: #666;
+  font-size: 1em;
+  margin-bottom: 10px;
+`;
+
+const CourseInstructor = styled.p`
+  color: #4a90e2;
   font-weight: bold;
 `;
 
-const Slider = styled.div`
-  display: flex;
-  overflow-x: hidden; /* 가로 스크롤바 제거 */
-  gap: 10px; /* 슬라이드 간 간격 */
-  padding: 20px;
-  scroll-snap-type: x mandatory;
-  scroll-behavior: smooth;
-  margin: 0; /* 슬라이드 간 마진 제거 */
-  max-width: calc(100% - 40px); /* 여백을 고려하여 100%에서 40px을 뺀 값 */
+const CourseDate = styled.p`
+  color: #999;
+  font-size: 0.9em;
 `;
-
-const Slide = styled.div`
-  flex: 0 0 33.3333%; /* 한 줄에 3개씩 보이도록 설정 */
-  height: 400px;
-  scroll-snap-align: start;
-  border-radius: 10px;
-  overflow: hidden;
-  transition: transform 0.3s ease;
-  margin-right: 10px; /* 각 슬라이드 간 마진 추가 */
-
-  &:hover {
-    transform: scale(1.1);
-    cursor: pointer;
-  }
-
-  /* 마지막 슬라이드에서는 마진을 없애기 */
-  &:last-child {
-    margin-right: 0;
-  }
-`;
-
-const Image = styled.img`
-  width: 100%;
-  height: 100%; /* 높이를 100%로 설정 */
-  object-fit: cover; /* 비율을 유지하며 잘라내기 */
-  display: block;
-  border-radius: 10px;
-`;
-
-const ArrowButton = styled.button`
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  background-color: rgba(0, 0, 0, 0.5);
-  color: white;
-  border: none;
-  font-size: 30px;
-  padding: 10px;
-  cursor: pointer;
-  z-index: 10;
-  ${(props) => (props.left ? "left: 10px;" : "right: 10px;")}
-
-  &:hover {
-    background-color: rgba(0, 0, 0, 0.8);
-  }
-`;
-
-// 공통 슬라이더 컴포넌트
-const ImageSlider = ({ title, images, onClick }) => {
-  const sliderRef = useRef(null);
-
-  const scrollToSlide = (direction) => {
-    if (sliderRef.current) {
-      const scrollAmount = (300 + 10) * 3; // 3개씩 이동 (각 슬라이드 크기 300px + 간격 10px)
-      sliderRef.current.scrollBy({
-        left: direction === "left" ? -scrollAmount : scrollAmount,
-        behavior: "smooth",
-      });
-    }
-  };
-
-  return (
-    <SliderContainer>
-      <Title>{title}</Title> {/* 헤더에 여백 추가 */}
-      <ArrowButton left onClick={() => scrollToSlide("left")}>
-        &#8249;
-      </ArrowButton>
-      <Slider ref={sliderRef}>
-        {images.map((image, index) => (
-          <Slide key={index} onClick={() => onClick(index)}> {/* 슬라이드를 클릭했을 때 해당 강의 정보 열기 */}
-            <Image src={image} alt={`Slide ${index + 1}`} />
-          </Slide>
-        ))}
-      </Slider>
-      <ArrowButton right onClick={() => scrollToSlide("right")}>
-        &#8250;
-      </ArrowButton>
-    </SliderContainer>
-  );
-};
 
 const CoursePage = () => {
-  const [showModal, setShowModal] = useState(false); // 모달 열기/닫기
-  const [selectedCourse, setSelectedCourse] = useState(null); // 선택된 강의 정보
-  const [searchTerm, setSearchTerm] = useState(""); // 검색어 상태
-
-  // state 저장 => 값이 변경되면 화면을 다시 만들어야됨
   const [courseData, setCourseData] = useState([]);
-
-  // 가짜 데이터
-  // const courseData = [
-  //   {
-  //     title: "프로그래밍",
-  //     images: [
-  //       "/images/dog1.jpg",
-  //       "/images/dog2.png",
-  //       "/images/dog3.png",
-  //       "/images/dog4.jpg",
-  //       "/images/dog5.jpg",
-  //     ],
-  //   },
-  //   {
-  //     title: "게임개발",
-  //     images: [
-  //       "/images/dog1.jpg",
-  //       "/images/dog2.png",
-  //       "/images/dog3.png",
-  //       "/images/dog4.jpg",
-  //       "/images/dog5.jpg",
-  //     ],
-  //   },
-  //   // 다른 카테고리들...
-  // ];
-
-  // 로그인한 사용자의 토큰
-  const token = useSelector((state) => state.member.token);
-
-  // API 기본 주소
+  const [searchTerm, setSearchTerm] = useState("");
+  const token = localStorage.getItem("token");
   const { host } = useContext(Context);
 
-  // 강의 이미지 리스트 조회 API 호출
-  useEffect(()=>{
-
-    const apicall = async () => {
-
-      // API 주소, 헤더
-      const response = await axios.get(`${host}/lecture/img`, {
-        headers: {
-          Authorization: token
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const response = await axios.get(`${host}/lecture/list`, {
+          headers: { Authorization: token },
+        });
+        if (response.status === 200) {
+          console.log("API response:", response.data);
+          setCourseData(response.data);
         }
-      });
-      
-      if (response.status === 200) {
-        let temp = [{
-          title: "프로그래밍",
-          images: response.data
-        },
-        {
-          title: "게임개발",
-          images: response.data
-        }];
-        setCourseData(temp);
-      } 
+      } catch (error) {
+        console.error("API call error:", error);
+      }
+    };
 
-    }
-    apicall();
+    fetchCourses();
+  }, [token, host]);
 
-  }, []);
-
-
-  const filteredCourseData = courseData.filter(course =>
+  const filteredCourses = courseData.filter((course) =>
     course.title.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  // 강의 클릭 시 모달 열기
-  const handleOpenModal = (index) => {
-    const course = filteredCourseData[index];
-    setSelectedCourse(course); // 선택한 강의 정보 저장
-    setShowModal(true); // 모달 열기
-  };
-
-  // 모달 닫기
-  const handleCloseModal = () => {
-    setShowModal(false); // 모달 닫기
-    setSelectedCourse(null); // 선택된 강의 초기화
-  };
-
   return (
-    <div>
-      {/* 배너 영역 */}
-      <Banner>
-        <div>
-          <BannerTitleWrapper>
-            <BannerTitle>강의</BannerTitle>
-            <BannerDescription>시작부터 실전까지...!</BannerDescription>
-          </BannerTitleWrapper>
+    <>
+      <GlobalStyle />
+      <Header>
+        <Container>
+          <Title>강의 목록</Title>
+          <Subtitle>시작부터 실전까지...!</Subtitle>
           <SearchContainer>
             <SearchInput
               type="text"
-              placeholder="검색..."
+              placeholder="강의 검색..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
             <SearchButton>검색</SearchButton>
           </SearchContainer>
-        </div>
-      </Banner>
-
-      {/* 슬라이더 및 강의 리스트 */}
-      {filteredCourseData.map((course, index) => (
-        <ImageSlider
-          key={index}
-          title={course.title}
-          images={course.images}
-          onClick={() => handleOpenModal(index)} // 슬라이드를 클릭하면 모달 열리기
-        />
-      ))}
-
-      {/* 강의 상세 정보를 모달로 표시 */}
-      <Modal show={showModal} onHide={handleCloseModal} centered size='xl'>
-        <Modal.Header closeButton>
-          <Modal.Title>{selectedCourse?.title}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedCourse ? (
-            <CourseDetail course={selectedCourse} /> // CourseDetail 컴포넌트에 선택된 강의 정보 전달
-          ) : (
-            <p>강의 정보를 불러오는 중...</p>
-          )}
-        </Modal.Body>
-      </Modal>
-    </div>
+        </Container>
+      </Header>
+      <Container>
+        <StyledCarousel
+          autoPlay
+          infiniteLoop
+          showThumbs={false}
+          showStatus={false}
+          interval={5000}
+        >
+          {filteredCourses.map((course) => (
+            <CourseCard key={course.lectureNo}>
+              <CourseImage
+                src={course.fileurl || '/placeholder-image.jpg'}
+                alt={`강의 이미지 ${course.title}`}
+              />
+              <CourseInfo>
+                <CourseTitle>{course.title}</CourseTitle>
+                <CourseDescription>{course.description}</CourseDescription>
+                <CourseInstructor>강사: {course.instructorName}</CourseInstructor>
+                <CourseDate>
+                  등록일: {new Date(course.regDate).toLocaleDateString()}
+                </CourseDate>
+              </CourseInfo>
+            </CourseCard>
+          ))}
+        </StyledCarousel>
+      </Container>
+    </>
   );
 };
 
 export default CoursePage;
+
