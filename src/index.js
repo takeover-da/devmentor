@@ -10,7 +10,13 @@ import { login } from './store/memberSlice';
 
 
 export const Context = createContext();
-let host = 'http://localhost:8080';
+
+let host;
+if (window.location.hostname === "localhost") {
+  host = 'http://localhost:8080';
+} else {
+  host = '/api';
+}
 
 // 리액트 앱이 다시 실행이 될때
 // 브라우저에 있는 로그인데이터를 꺼내서 다시 로그인 처리

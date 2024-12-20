@@ -22,7 +22,7 @@ const LearnerMypage = () => {
   ]);
 
   return (
-    <div style={{ padding: '20px', maxWidth: '1200px', margin: '0 auto' }}>
+    <div style={{ padding: '20px', maxWidth: '3000px', margin: '0 auto' }}>
       <h1 style={{ textAlign: 'left', margin: 0, padding: '10px 0', fontSize: '24px' }}>
         학습자 마이페이지
       </h1>

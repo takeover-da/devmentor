@@ -65,10 +65,10 @@ const StyledForm = styled(Form)`
   }
 `;
 
-const RegisterInstructor = ({ closeModal }) => {
+const RegisterLecture = ({ closeModal }) => {
   const [isModalOpen, setIsModalOpen] = useState(true);
   const [isLogin, setIsLogin] = useState(false);
-  const [activeRegisterForm, setActiveRegisterForm] = useState("INSTRUCTOR");
+  const [activeRegisterForm, setActiveRegisterForm] = useState("LECTURE");
   const { host } = useContext(Context);
 
   const [member, setMember] = useState({
@@ -76,14 +76,14 @@ const RegisterInstructor = ({ closeModal }) => {
     name: "",
     password: "",
     email: "",
-    role: "INSTRUCTOR",
+    role: "LECTURE",
   });
 
   useEffect(() => {
     if (member.name === "학습자") {
       setTimeout(() => {
         setIsModalOpen(false);
-        setTimeout(() => setActiveRegisterForm("LEARNER"), 300); // 300ms 뒤에 INSTRUCTOR 모달 열기
+        setTimeout(() => setActiveRegisterForm("LEARNER"), 300); // 300ms 뒤에 LECTURE 모달 열기
       }, 300);
     }
 
@@ -118,12 +118,12 @@ const RegisterInstructor = ({ closeModal }) => {
   };
 
   if (activeRegisterForm === "LEARNER") {
-    return <Register closeModal={() => setActiveRegisterForm("INSTRUCTOR")} />;
+    return <Register closeModal={() => setActiveRegisterForm("LECTURE")} />;
   }
 
   if (activeRegisterForm === "ADMIN") {
     return (
-      <RegisterAdmin closeModal={() => setActiveRegisterForm("INSTRUCTOR")} />
+      <RegisterAdmin closeModal={() => setActiveRegisterForm("LECTURE")} />
     );
   }
   if (isLogin) {
@@ -179,4 +179,4 @@ const RegisterInstructor = ({ closeModal }) => {
   );
 };
 
-export default RegisterInstructor;
+export default RegisterLecture;

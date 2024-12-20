@@ -49,22 +49,18 @@ const Subtitle = styled.p`
 `;
 
 const SearchContainer = styled.div`
+  margin-top: 20px;
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
+  gap: 10px;
 `;
 
 const SearchInput = styled.input`
+  padding: 10px;
   width: 300px;
-  padding: 10px 15px;
   font-size: 16px;
   border: 1px solid #ddd;
-  border-radius: 25px 0 0 25px;
-  outline: none;
-
-  &:focus {
-    border-color: #555;
-  }
+  border-radius: 5px;
 `;
 
 const SearchButton = styled.button`
@@ -73,9 +69,8 @@ const SearchButton = styled.button`
   color: white;
   background-color: #333;
   border: none;
-  border-radius: 0 25px 25px 0;
+  border-radius: 5px;
   cursor: pointer;
-  transition: background-color 0.3s;
 
   &:hover {
     background-color: #555;
@@ -130,14 +125,17 @@ const CourseCard = styled.div`
   background: white;
   border-radius: 8px;
   overflow: hidden;
-  box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+  /* box-shadow: 0 4px 6px rgba(0,0,0,0.1); */
   margin-bottom: 20px;
 `;
 
-const CourseImage = styled.img`
+const CourseImage = styled.div`
   width: 100%;
   height: 200px;
-  object-fit: cover;
+  background-image: url(${(props) => props.src || '/placeholder-image.jpg'});
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 `;
 
 const CourseInfo = styled.div`
@@ -221,22 +219,22 @@ const CoursePage = () => {
           interval={5000}
         >
           {filteredCourses.map((course) => (
-              <Link to={`/lecture/read/${course.lectureNo}`}>
-            <CourseCard key={course.lectureNo}>
+            <Link to={`/lecture/read/${course.lectureNo}`} key={course.lectureNo}>
+              <CourseCard>
               <CourseImage
-                src={course.fileurl || '/placeholder-image.jpg'}
-                alt={`강의 이미지 ${course.title}`}
-              />
-              <CourseInfo>
-                <CourseTitle>{course.title}</CourseTitle>
-                <CourseDescription>{course.description}</CourseDescription>
-                <CourseInstructor>강사: {course.instructorName}</CourseInstructor>
-                <CourseDate>
-                  등록일: {new Date(course.regDate).toLocaleDateString()}
-                </CourseDate>
-              </CourseInfo>
-            </CourseCard>
-              </Link>
+                  src={course.fileurl || '/placeholder-image.jpg'}
+                  alt={`강의 이미지 ${course.title}`}
+                />
+                <CourseInfo>
+                  <CourseTitle>{course.title}</CourseTitle>
+                  <CourseDescription>{course.description}</CourseDescription>
+                  <CourseInstructor>강사: {course.instructorName}</CourseInstructor>
+                  <CourseDate>
+                    등록일: {new Date(course.regDate).toLocaleDateString()}
+                  </CourseDate>
+                </CourseInfo>
+              </CourseCard>
+            </Link>
           ))}
         </StyledCarousel>
       </Container>
@@ -245,4 +243,3 @@ const CoursePage = () => {
 };
 
 export default CoursePage;
-

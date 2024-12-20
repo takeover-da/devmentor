@@ -8,8 +8,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 const HeaderContainer = styled.div`
   width: 100%;
-  height: 100px;
-  background-color: white;
+  height: 75px;
+  background-color: #ffffff;
   display: flex;
   align-items: center;
   padding: 0 20px;
@@ -211,8 +211,8 @@ const Header = () => {
     if (user) {
       if (user.role === 'ADMIN') {
         navigate('/AdminMypage');
-      } else if (user.role === 'INSTRUCTOR') {
-        navigate('/InstructorMypage');
+      } else if (user.role === 'LECTURE') {
+        navigate('/LectureMypage');
       } else if (user.role === 'LEARNER') {
         navigate('/LearnerMypage');
       }
@@ -228,30 +228,20 @@ const Header = () => {
       </SiteNameContainer>
 
       <MenuContainerWrapper>
+        {/* '커뮤니티' 메뉴 삭제 */}
         <MenuItem onMouseEnter={() => handleMouseEnter('menu1')} onMouseLeave={handleMouseLeave}>
           강의
           <DropdownMenu isOpen={openDropdown === 'menu1'}>
             <DropdownItem>
               <Link to="/CoursePage">전체 강의</Link>
             </DropdownItem>
-            <DropdownItem>
-              <Link to="/RoadmapPage">로드맵</Link>
-            </DropdownItem>
           </DropdownMenu>
         </MenuItem>
         <MenuItem onMouseEnter={() => handleMouseEnter('menu2')} onMouseLeave={handleMouseLeave}>
-          멘토링
+          로드맵
           <DropdownMenu isOpen={openDropdown === 'menu2'}>
             <DropdownItem>
-              <Link to="/MentoringPage">멘토링 프로그램</Link>
-            </DropdownItem>
-          </DropdownMenu>
-        </MenuItem>
-        <MenuItem onMouseEnter={() => handleMouseEnter('menu3')} onMouseLeave={handleMouseLeave}>
-          커뮤니티
-          <DropdownMenu isOpen={openDropdown === 'menu3'}>
-            <DropdownItem>
-              <Link to="/CommunityPage">포럼</Link>
+              <Link to="/RoadmapPage">로드맵</Link>
             </DropdownItem>
           </DropdownMenu>
         </MenuItem>

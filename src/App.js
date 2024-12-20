@@ -9,7 +9,7 @@ import CommunityPage from './features/CommunityPage';
 import Login from './features/Login';
 import Register from './features/Register';
 import CourseDetail from './features/CourseDetail';
-import InstructorMypage from "./features/InstructorMypage";
+import LectureMypage from "./features/LectureMypage";
 import LearnerMypage from './features/LearnerMypage';
 import AdminMypage from './features/AdminMypage';
 import RoadmapDetail from './features/RoadmapDetail';
@@ -51,17 +51,18 @@ function App() {
 
           {/* 커뮤니티 */}
           <Route path='/CommunityPage' element={<CommunityPage />} />
-
-          {/* 교육자 마이페이지 */}
-          <Route path='/InstructorMypage' element={<InstructorMypage />}/>
-
-          {/* 학습자 마이페이지 */}
-          <Route path='/LearnerMypage' element={<LearnerMypage />}/>
-
-          {/* 관리자 마이페이지 */}
-          <Route path='/AdminMypage' element={<AdminMypage />}/>
-
         </Route>
+
+        {/* 교육자 마이페이지 */}
+        <Route path='/LectureMypage' element={<LectureMypage />}/>
+
+        {/* 학습자 마이페이지 */}
+        <Route path='/LearnerMypage' element={<LearnerMypage />}/>
+
+        {/* 관리자 마이페이지 */}
+        <Route path='/AdminMypage' element={<AdminMypage />}/>
+
+
       </Routes>
     </div>
   );

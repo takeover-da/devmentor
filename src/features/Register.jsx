@@ -4,7 +4,7 @@ import { Form, Button } from "react-bootstrap";
 import axios from "axios";
 import { Context } from "../index";
 import { useNavigate } from "react-router-dom";
-import RegisterInstructor from "./RegisterInstructor";
+import RegisterLecture from "./RegisterLecture";
 import RegisterAdmin from "./RegisterAdmin";
 import Login from "./Login";
 
@@ -67,7 +67,7 @@ const Register = ({ closeModal }) => {
     role: "LEARNER",
   });
   const [isModalOpen, setIsModalOpen] = useState(true); // 현재 모달 열림 상태
-  const [activeRegisterForm, setActiveRegisterForm] = useState("LEARNER"); // LEARNER, INSTRUCTOR, ADMIN
+  const [activeRegisterForm, setActiveRegisterForm] = useState("LEARNER"); // LEARNER, LECTURE, ADMIN
   const [isLogin, setIsLogin] = useState(false);
   const { host } = useContext(Context);
   const navigate = useNavigate();
@@ -76,7 +76,7 @@ const Register = ({ closeModal }) => {
     if (member.name === "교육자") {
       setTimeout(() => {
         setIsModalOpen(false);
-        setTimeout(() => setActiveRegisterForm("INSTRUCTOR"), 300); // 300ms 뒤에 INSTRUCTOR 모달 열기
+        setTimeout(() => setActiveRegisterForm("LECTURE"), 300); // 300ms 뒤에 LECTURE 모달 열기
       }, 300);
     }
 
@@ -110,9 +110,9 @@ const Register = ({ closeModal }) => {
     }
   };
 
-  if (activeRegisterForm === "INSTRUCTOR") {
+  if (activeRegisterForm === "LECTURE") {
     return (
-      <RegisterInstructor closeModal={() => setActiveRegisterForm("LEARNER")} />
+      <RegisterLecture closeModal={() => setActiveRegisterForm("LEARNER")} />
     );
   }
 

@@ -182,7 +182,7 @@ const RoadmapPage = () => {
     const fetchRoadmaps = async () => {
       try {
         const response = await axios.get(`${host}/roadmap/list`, {
-          headers: { Authorization: `Bearer ${token}` },
+          headers: { Authorization: token },
         });
         if (response.status === 200) {
           setRoadmapData(response.data);
@@ -242,10 +242,11 @@ const RoadmapPage = () => {
       <ContentContainer>
         {currentItems.map(item => (
           <Item key={item.roadmapNo} onClick={() => handleOpenModal(item)}>
-            <ItemImage src={item.image} alt={item.title} />
+            {/* 썸네일 이미지 사용 */}
+            {item.thumnail && <ItemImage src={item.thumnail} alt={item.title} />}
             <ItemTitle>{item.title}</ItemTitle>
             <TagContainer>
-              <Tag>#{item.difficulty}</Tag>
+              <Tag>#{item.difficulty === 0 ? '초급' : item.difficulty === 1 ? '중급' : '고급'}</Tag>
             </TagContainer>
             <ItemDescription>{item.description}</ItemDescription>
           </Item>

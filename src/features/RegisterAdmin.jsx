@@ -6,7 +6,7 @@ import axios from "axios";
 import { Context } from "../index";
 import { useNavigate } from "react-router-dom";
 import Register from "./Register";
-import RegisterInstructor from "./RegisterInstructor";
+import RegisterLecture from "./RegisterLecture";
 import Login from "./Login";
 
 const FormContainer = styled.div`
@@ -83,14 +83,14 @@ const RegisterAdmin = () => {
     if (member.name === "학습자") {
       setTimeout(() => {
         setIsModalOpen(false);
-        setTimeout(() => setActiveRegisterForm("LEARNER"), 300); // 300ms 뒤에 INSTRUCTOR 모달 열기
+        setTimeout(() => setActiveRegisterForm("LEARNER"), 300); // 300ms 뒤에 LECTURE 모달 열기
       }, 300);
     }
 
     if (member.name === "교육자") {
       setTimeout(() => {
         setIsModalOpen(false);
-        setTimeout(() => setActiveRegisterForm("INSTRUCTOR"), 300); // 300ms 뒤에 ADMIN 모달 열기
+        setTimeout(() => setActiveRegisterForm("LECTURE"), 300); // 300ms 뒤에 ADMIN 모달 열기
       }, 300);
     }
   }, [member.name]);
@@ -121,9 +121,9 @@ const RegisterAdmin = () => {
     return <Register closeModal={() => setActiveRegisterForm("ADMIN")} />;
   }
 
-  if (activeRegisterForm === "INSTRUCTOR") {
+  if (activeRegisterForm === "LECTURE") {
     return (
-      <RegisterInstructor closeModal={() => setActiveRegisterForm("ADMIN")} />
+      <RegisterLecture closeModal={() => setActiveRegisterForm("ADMIN")} />
     );
   }
   if (isLogin) {
