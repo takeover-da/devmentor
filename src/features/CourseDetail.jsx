@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
@@ -60,6 +60,8 @@ const CourseDetail = () => {
   const [course, setCourse] = useState(null); // 강의 세부 정보
   const [loading, setLoading] = useState(true); // 로딩 상태
   const [error, setError] = useState(null); // 에러 상태
+  const { host } = useContext(Context);
+  
 
   const token = localStorage.getItem("token");
 
@@ -69,7 +71,7 @@ const CourseDetail = () => {
     console.log("Received lectureNo:", lectureNo); // lectureNo 값 확인용
     const fetchCourseDetail = async () => {
       try {
-        const response = await axios.get(`http://localhost:8080/lecture/read?lectureNo=${lectureNo}`, {
+        const response = await axios.get(`${host}/lecture/read?lectureNo=${lectureNo}`, {
           headers: { Authorization: token },
         });
         setCourse(response.data); // 강의 세부 정보 업데이트
