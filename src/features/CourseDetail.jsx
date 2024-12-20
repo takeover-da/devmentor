@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import axios from "axios";
 import styled from "styled-components";
+import { Context } from "../index.js";
 
 // 스타일드 컴포넌트 정의
 const Container = styled.div`
